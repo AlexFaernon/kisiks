@@ -16,10 +16,10 @@ fun BottomNavigation(
     navController: NavController
 ) {
     val listItems = listOf(
-        BottomItem.Screen1,
-        BottomItem.Screen2,
-        BottomItem.Screen3,
-        BottomItem.Screen4
+        BottomItem.ScreenMain,
+        BottomItem.ScreenAnalytics,
+        BottomItem.ScreenPurpose,
+        BottomItem.ScreenSettings
     )
     NavigationBar (
         containerColor = Color(0xFFBEC399),
@@ -36,14 +36,14 @@ fun BottomNavigation(
                 icon = {
                     Icon(
                         painter = painterResource(id = item.iconId),
-                        contentDescription = "Icon"
+                        contentDescription = "Icon",
+                        tint = Color.Unspecified
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.White,
-                    unselectedIconColor = Color.Gray,
-                    selectedTextColor = Color.Transparent,
-                    indicatorColor = Color.Transparent)
+                    selectedIconColor = Color.Unspecified,
+                    unselectedIconColor = Color.Unspecified,
+                    indicatorColor = Color.Transparent),
                 )
         }
     }

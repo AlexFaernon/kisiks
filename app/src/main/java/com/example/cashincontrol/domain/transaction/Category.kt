@@ -1,4 +1,6 @@
 package com.example.cashincontrol.domain.transaction
 
-abstract class Category(open val name: String) {
+abstract class Category() {
+    abstract val name: String
+    abstract val icon: Int
 }

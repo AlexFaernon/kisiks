@@ -6,4 +6,5 @@ abstract class Transaction(){
     abstract val sum: Float
     abstract val card: String
     abstract val date: Date
+    abstract val category: Category
 }

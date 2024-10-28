@@ -1,5 +1,6 @@
 package com.example.cashincontrol.presentation
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,6 +32,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cashincontrol.R
+import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import com.example.cashincontrol.domain.transaction.ExpensesTransaction
+import com.example.cashincontrol.domain.transaction.Transaction
+import java.time.LocalDate
+
+
+val cat = ExpensesCategory("Test1", R.drawable.icon_top_mian)
+val trans = listOf(ExpensesTransaction(933f,"МИР", LocalDate.now(), cat, "АОО ХУЙ В ЖОПУ ЕНТЕРТЕЙМЕНТ"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"),
+    ExpensesTransaction(5000f,"XXX", LocalDate.now(), cat, "АОО"))
 
 @Preview
 @Composable
@@ -36,9 +55,8 @@ fun MainScreen(){
         verticalArrangement = Arrangement.spacedBy(23.dp) // Отступы между элементами
     ) {
         TopSection()
-        TransactionCard()
+        TransactionListScreen(trans)
     }
-
 }
 
 @Composable
@@ -107,11 +125,15 @@ fun TopSection() {
 }
 
 @Composable
-fun TransactionCard() {
+fun TransactionCard(transaction: Transaction) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        border = BorderStroke(1.dp, Color.Gray),
+        shape = RoundedCornerShape(0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -119,7 +141,7 @@ fun TransactionCard() {
         ) {
             // Дата транзакции
             Text(
-                text = "16 сентября",
+                text = transaction.date.year.toString(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 5.dp)
@@ -130,7 +152,7 @@ fun TransactionCard() {
             ) {
                 // Иконка категории
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_main),
+                    painter = painterResource(id = transaction.category.icon),
                     contentDescription = null,
                     modifier = Modifier
                         .size(30.dp),
@@ -144,13 +166,13 @@ fun TransactionCard() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Здоровье и красота",
+                        text = transaction.category.name,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     )
 
                     Text(
-                        text = "Карта МИР",
+                        text = transaction.card,
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
@@ -163,8 +185,9 @@ fun TransactionCard() {
                 }
 
                 // Сумма транзакции
+                val sum =transaction.sum
                 Text(
-                    text = "-920₽",
+                    text = "$sum₽",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(start = 6.dp)
@@ -174,16 +197,17 @@ fun TransactionCard() {
     }
 }
 
-//@Composable
-//fun TransactionListScreen(transactions: List<Transaction>) {
-//    LazyColumn(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        verticalArrangement = Arrangement.spacedBy(13.dp)
-//    ) {
-//        items(transactions) { transaction ->
-//            TransactionCard(transaction = transaction)
-//        }
-//    }
-//}
+@Composable
+fun TransactionListScreen(transactions: List<Transaction>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 23.dp, end = 23.dp, bottom = 148.dp),
+        verticalArrangement = Arrangement.spacedBy(13.dp)
+    ) {
+        itemsIndexed(transactions){
+            index, item ->
+            TransactionCard(item)
+        }
+    }
+}

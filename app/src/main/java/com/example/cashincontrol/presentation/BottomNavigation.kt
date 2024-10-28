@@ -1,4 +1,4 @@
-package com.example.cashincontrol
+package com.example.cashincontrol.presentation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

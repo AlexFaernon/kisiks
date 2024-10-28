@@ -1,4 +1,4 @@
-package com.example.cashincontrol
+package com.example.cashincontrol.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentHeight

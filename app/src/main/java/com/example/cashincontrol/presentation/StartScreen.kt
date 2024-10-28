@@ -1,4 +1,4 @@
-package com.example.cashincontrol
+package com.example.cashincontrol.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold

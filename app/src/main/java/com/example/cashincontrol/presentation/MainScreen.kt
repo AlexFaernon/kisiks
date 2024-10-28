@@ -94,3 +94,8 @@ fun TopSection() {
         Spacer(modifier = Modifier.height(6.dp))
     }
 }
+
+@Composable
+fun ItemCard(){
+
+}

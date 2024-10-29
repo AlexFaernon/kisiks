@@ -7,11 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 
-@Preview
 @Composable
-fun Main() {
-    MainScreen()
+fun Main(navController: NavController) {
+    MainScreen(navController)
 }
 
 @Composable
@@ -32,9 +32,9 @@ fun Purpose() {
 }
 @Composable
 fun Settings() {
-    Text(
-        modifier = Modifier.fillMaxSize().wrapContentHeight(),
-        text = "Settings",
-        textAlign = TextAlign.Center
-    )
+        Text(
+            modifier = Modifier.fillMaxSize().wrapContentHeight(),
+            text = "Settings",
+            textAlign = TextAlign.Center
+        )
 }

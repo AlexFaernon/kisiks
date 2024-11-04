@@ -4,6 +4,7 @@
 
 package com.example.cashincontrol.presentation
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,6 +34,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
+import com.example.cashincontrol.domain.UserClass
+import com.example.cashincontrol.domain.transaction.Category
+import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import com.example.cashincontrol.domain.transaction.IncomeCategory
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -42,7 +47,8 @@ import java.util.Locale
 
 data class DataForm(
     val transactionType: String,
-    val transactionCategory: String,
+    val transactionCategory: Category,
+
     val transactionKind: String,
     val transactionDate: LocalDate,
     val transactionComment: String,
@@ -50,10 +56,12 @@ data class DataForm(
     val moneyAmount: Int,
 )
 
+
+
 @Composable
 fun AddScreen(navController: NavController) {
     val transactionType = remember { mutableStateOf("доход") }
-    val transactionCategory = remember { mutableStateOf("продукты") }
+    val transactionCategory = remember { mutableStateOf(UserClass.GetIncomeCategory().first() as Category) }
     val transactionKind = remember { mutableStateOf("") }
     val transactionDate = remember { mutableStateOf(LocalDate.now()) }
     val transactionComment = remember { mutableStateOf("") }
@@ -73,7 +81,8 @@ fun AddScreen(navController: NavController) {
             transactionDate,
             transactionComment,
             isRegular,
-            moneyAmount
+            moneyAmount,
+            transactionType.value
         )
 
         Button(
@@ -136,15 +145,16 @@ private fun TopSection(navController: NavController, transactionType: MutableSta
 
 @Composable
 private fun MainSection(
-    transactionCategory: MutableState<String>,
+    transactionCategory: MutableState<Category>,
     transactionKind: MutableState<String>,
     transactionDate: MutableState<LocalDate>,
     transactionComment: MutableState<String>,
     isRegular: MutableState<Boolean>,
-    moneyAmount: MutableState<String>
+    moneyAmount: MutableState<String>,
+    transactionType: String
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        TransactionCategorySection(transactionCategory)
+        TransactionCategorySection(transactionCategory, transactionType)
         TransactionKindSection(transactionKind)
         TransactionDateSection(transactionDate)
         TransactionCommentSection(transactionComment)
@@ -155,9 +165,9 @@ private fun MainSection(
 }
 
 @Composable
-private fun TransactionCategorySection(transactionCategory: MutableState<String>) {
+private fun TransactionCategorySection(transactionCategory: MutableState<Category>, transactionType: String) {
     LabeledRow(label = "Категория платежа") {
-        CategoryDropdownMenu(transactionCategory)
+        CategoryDropdownMenu(transactionCategory, transactionType)
     }
 }
 
@@ -289,10 +299,10 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>) {
 }
 
 @Composable
-fun CategoryDropdownMenu(transactionCategory: MutableState<String>) {
+fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactionType: String) {
     var expanded by remember { mutableStateOf(false) }
-    val categories = remember { mutableStateListOf("продукты", "лекарства", "другое") }
     var showDialog by remember { mutableStateOf(false) }
+    var categoryList = if (transactionType == "доход") UserClass.GetIncomeCategory() else UserClass.GetExpensesCategory()
 
     Box(
         modifier = Modifier
@@ -303,7 +313,7 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<String>) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = transactionCategory.value,
+            text = transactionCategory.value.name,
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Normal,
@@ -314,9 +324,9 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<String>) {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            categories.forEach { category ->
+            categoryList.forEach { category ->
                 DropdownMenuItem(
-                    text = { Text(category) },
+                    text = { Text(category.name) },
                     onClick = {
                         transactionCategory.value = category
                         expanded = false
@@ -333,13 +343,14 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<String>) {
         }
     }
     if (showDialog) {
-        AddCategoryDialog(categories = categories, onDismiss = { showDialog = false })
+        AddCategoryDialog(categories = categoryList, onDismiss = { showDialog = false }, transactionType)
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun AddCategoryDialog(categories: MutableList<String>, onDismiss: () -> Unit) {
-    var newCategory by remember { mutableStateOf("") }
+fun AddCategoryDialog(categories: List<Category>, onDismiss: () -> Unit, transactionType: String) {
+    var newCategory: MutableState<Category> = mutableStateOf(IncomeCategory(""))
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -353,8 +364,8 @@ fun AddCategoryDialog(categories: MutableList<String>, onDismiss: () -> Unit) {
                 Text("Добавить новую категорию", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
-                    value = newCategory,
-                    onValueChange = { newCategory = it },
+                    value = "newCategory",
+                    onValueChange = { newCategory = if (transactionType == "доход") mutableStateOf(IncomeCategory(it)) else mutableStateOf(ExpensesCategory(it)) },
                     label = { Text("Название категории") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -368,8 +379,8 @@ fun AddCategoryDialog(categories: MutableList<String>, onDismiss: () -> Unit) {
                     }
                     TextButton(
                         onClick = {
-                            if (newCategory.isNotBlank()) {
-                                categories.add(newCategory)
+                            if (newCategory.value.name.isNotBlank()) {
+                                UserClass.categories.add(newCategory.value)
                                 onDismiss()
                             }
                         }

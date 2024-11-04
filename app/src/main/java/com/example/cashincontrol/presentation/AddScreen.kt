@@ -48,7 +48,6 @@ import java.util.Locale
 data class DataForm(
     val transactionType: String,
     val transactionCategory: Category,
-
     val transactionKind: String,
     val transactionDate: LocalDate,
     val transactionComment: String,
@@ -60,7 +59,7 @@ data class DataForm(
 
 @Composable
 fun AddScreen(navController: NavController) {
-    val transactionType = remember { mutableStateOf("доход") }
+    val transactionType = remember { mutableStateOf("Доход") }
     val transactionCategory = remember { mutableStateOf(UserClass.GetIncomeCategory().first() as Category) }
     val transactionKind = remember { mutableStateOf("") }
     val transactionDate = remember { mutableStateOf(LocalDate.now()) }
@@ -71,7 +70,7 @@ fun AddScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, top = 48.dp, end = 22.dp),
+            .padding(start = 10.dp, top = 48.dp, end = 10.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TopSection(navController, transactionType)
@@ -99,12 +98,15 @@ fun AddScreen(navController: NavController) {
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
                 navController.navigate("main")
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFBEC399)
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(3.dp)),
             shape = RoundedCornerShape(3.dp),
-            contentPadding = PaddingValues(12.dp)
+            contentPadding = PaddingValues(12.dp),
         ) {
             Text(
                 text = "Сохранить",
@@ -193,7 +195,12 @@ private fun TransactionSwitchSection(isRegular: MutableState<Boolean>) {
     LabeledRow(label = "Сделать платеж регулярным") {
         Switch(
             checked = isRegular.value,
-            onCheckedChange = { isRegular.value = it }
+            onCheckedChange = { isRegular.value = it },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color(0xFFBEC399),
+                checkedTrackColor = Color(0xFFDCFFBB),
+                checkedBorderColor = Color(0xFFBEC399)
+            )
         )
     }
 }
@@ -281,16 +288,16 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>) {
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = { Text("расход") },
+                text = { Text("Расход") },
                 onClick = {
-                    transactionType.value = "расход"
+                    transactionType.value = "Расход"
                     expanded = false
                 }
             )
             DropdownMenuItem(
-                text = { Text("доход") },
+                text = { Text("Доход") },
                 onClick = {
-                    transactionType.value = "доход"
+                    transactionType.value = "Доход"
                     expanded = false
                 }
             )
@@ -302,7 +309,7 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>) {
 fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactionType: String) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    var categoryList = if (transactionType == "доход") UserClass.GetIncomeCategory() else UserClass.GetExpensesCategory()
+    var categoryList = if (transactionType == "Доход") UserClass.GetIncomeCategory() else UserClass.GetExpensesCategory()
 
     Box(
         modifier = Modifier
@@ -365,7 +372,7 @@ fun AddCategoryDialog(categories: List<Category>, onDismiss: () -> Unit, transac
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = "newCategory",
-                    onValueChange = { newCategory = if (transactionType == "доход") mutableStateOf(IncomeCategory(it)) else mutableStateOf(ExpensesCategory(it)) },
+                    onValueChange = { newCategory = if (transactionType == "Доход") mutableStateOf(IncomeCategory(it)) else mutableStateOf(ExpensesCategory(it)) },
                     label = { Text("Название категории") },
                     modifier = Modifier.fillMaxWidth()
                 )

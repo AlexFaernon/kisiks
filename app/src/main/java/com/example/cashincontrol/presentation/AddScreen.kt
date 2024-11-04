@@ -34,24 +34,81 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 
+data class DataForm(
+    val transactionType: String,
+    val transactionCategory: String,
+    val transactionKind: String,
+    val transactionDate: LocalDate,
+    val transactionComment: String,
+    val isRegular:Boolean,
+    val moneyAmount: Int,
+)
+
 @Composable
 fun AddScreen(navController: NavController) {
+    val transactionType = remember { mutableStateOf("доход") }
+    val transactionCategory = remember { mutableStateOf("продукты") }
+    val transactionKind = remember { mutableStateOf("") }
+    val transactionDate = remember { mutableStateOf(LocalDate.now()) }
+    val transactionComment = remember { mutableStateOf("") }
+    val isRegular = remember { mutableStateOf(true) }
+    val moneyAmount = remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 8.dp, top = 48.dp, end = 22.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TopSection(navController)
-        MainSection()
+        TopSection(navController, transactionType)
+        MainSection(
+            transactionCategory,
+            transactionKind,
+            transactionDate,
+            transactionComment,
+            isRegular,
+            moneyAmount
+        )
+
+        Button(
+            onClick = {
+                val dataForm = DataForm(
+                    transactionType = transactionType.value,
+                    transactionCategory = transactionCategory.value,
+                    transactionKind = transactionKind.value,
+                    transactionDate = transactionDate.value,
+                    transactionComment = transactionComment.value,
+                    isRegular = isRegular.value,
+                    moneyAmount = moneyAmount.value.toIntOrNull() ?: 0
+                )
+                Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
+                navController.navigate("main")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(3.dp)),
+            shape = RoundedCornerShape(3.dp),
+            contentPadding = PaddingValues(12.dp)
+        ) {
+            Text(
+                text = "Сохранить",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }
 
 @Composable
-private fun TopSection(navController: NavController) {
+private fun TopSection(navController: NavController, transactionType: MutableState<String>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,58 +130,64 @@ private fun TopSection(navController: NavController) {
         )
 
         Spacer(modifier = Modifier.weight(35f))
-        TransactionDropdownMenu()
+        TransactionDropdownMenu(transactionType)
     }
 }
 
-@Preview
 @Composable
-private fun MainSection() {
+private fun MainSection(
+    transactionCategory: MutableState<String>,
+    transactionKind: MutableState<String>,
+    transactionDate: MutableState<LocalDate>,
+    transactionComment: MutableState<String>,
+    isRegular: MutableState<Boolean>,
+    moneyAmount: MutableState<String>
+) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        TransactionCategorySection()
-        TransactionTypeSection()
-        TransactionDateSection()
-        TransactionCommentSection()
-        TransactionSwitchSection()
+        TransactionCategorySection(transactionCategory)
+        TransactionKindSection(transactionKind)
+        TransactionDateSection(transactionDate)
+        TransactionCommentSection(transactionComment)
+        TransactionSwitchSection(isRegular)
         FileUploadButton()
-        MoneyInputField()
+        MoneyInputField(moneyAmount)
     }
 }
 
 @Composable
-private fun TransactionCategorySection() {
+private fun TransactionCategorySection(transactionCategory: MutableState<String>) {
     LabeledRow(label = "Категория платежа") {
-        CategoryDropdownMenu()
+        CategoryDropdownMenu(transactionCategory)
     }
 }
 
 @Composable
-private fun TransactionTypeSection() {
-    LabeledRowWithTextField(label = "Вид платежа")
+private fun TransactionKindSection(transactionKind: MutableState<String>) {
+    LabeledRowWithTextField(label = "Вид платежа", textState = transactionKind)
 }
 
 @Composable
-private fun TransactionDateSection() {
+private fun TransactionDateSection(transactionDate: MutableState<LocalDate>) {
     LabeledRow(label = "Дата") {
-        DatePickerDocked()
+        DatePickerDocked(transactionDate)
     }
 }
 
 @Composable
-private fun TransactionCommentSection() {
-    LabeledRowWithTextField(label = "Комментарий")
+private fun TransactionCommentSection(transactionComment: MutableState<String>) {
+    LabeledRowWithTextField(label = "Комментарий", textState = transactionComment)
 }
 
 @Composable
-private fun TransactionSwitchSection() {
+private fun TransactionSwitchSection(isRegular: MutableState<Boolean>) {
     LabeledRow(label = "Сделать платеж регулярным") {
-        var checked by remember { mutableStateOf(true) }
         Switch(
-            checked = checked,
-            onCheckedChange = { checked = it }
+            checked = isRegular.value,
+            onCheckedChange = { isRegular.value = it }
         )
     }
 }
+
 
 @Composable
 fun LabeledRow(label: String, content: @Composable RowScope.() -> Unit) {
@@ -140,12 +203,11 @@ fun LabeledRow(label: String, content: @Composable RowScope.() -> Unit) {
 }
 
 @Composable
-fun LabeledRowWithTextField(label: String) {
+fun LabeledRowWithTextField(label: String, textState: MutableState<String>) {
     LabeledRow(label = label) {
-        val message = remember { mutableStateOf("") }
         OutlinedTextField(
-            value = message.value,
-            onValueChange = { message.value = it },
+            value = textState.value,
+            onValueChange = { textState.value = it },
             textStyle = TextStyle(fontSize = 20.sp),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
@@ -186,9 +248,8 @@ fun TextWithBackground(text: String, backgroundColor: Color, paddingValues: Padd
 }
 
 @Composable
-fun TransactionDropdownMenu() {
+fun TransactionDropdownMenu(transactionType: MutableState<String>) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("доход") }
 
     Box(
         modifier = Modifier
@@ -198,7 +259,7 @@ fun TransactionDropdownMenu() {
             .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp)),
     ) {
         Text(
-            text = selectedOption,
+            text = transactionType.value,
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Normal,
@@ -212,14 +273,14 @@ fun TransactionDropdownMenu() {
             DropdownMenuItem(
                 text = { Text("расход") },
                 onClick = {
-                    selectedOption = "расход"
+                    transactionType.value = "расход"
                     expanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("доход") },
                 onClick = {
-                    selectedOption = "доход"
+                    transactionType.value = "доход"
                     expanded = false
                 }
             )
@@ -228,9 +289,8 @@ fun TransactionDropdownMenu() {
 }
 
 @Composable
-fun CategoryDropdownMenu() {
+fun CategoryDropdownMenu(transactionCategory: MutableState<String>) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("продукты") }
     val categories = remember { mutableStateListOf("продукты", "лекарства", "другое") }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -243,7 +303,7 @@ fun CategoryDropdownMenu() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = selectedOption,
+            text = transactionCategory.value,
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Normal,
@@ -258,7 +318,7 @@ fun CategoryDropdownMenu() {
                 DropdownMenuItem(
                     text = { Text(category) },
                     onClick = {
-                        selectedOption = category
+                        transactionCategory.value = category
                         expanded = false
                     }
                 )
@@ -349,11 +409,10 @@ fun FileUploadButton() {
 }
 
 @Composable
-fun MoneyInputField() {
-    val message = remember { mutableStateOf("") }
+fun MoneyInputField(moneyAmount: MutableState<String>) {
     OutlinedTextField(
-        value = message.value,
-        onValueChange = { message.value = it },
+        value = moneyAmount.value,
+        onValueChange = { moneyAmount.value = it },
         textStyle = TextStyle(fontSize = 48.sp),
         trailingIcon = {
             Text(
@@ -376,13 +435,23 @@ fun MoneyInputField() {
     )
 }
 
+
 @Composable
-fun DatePickerDocked() {
+fun DatePickerDocked(transactionDate: MutableState<LocalDate>) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
+
+    // Используем LaunchedEffect для отслеживания изменений в selectedDateMillis
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let {
+            transactionDate.value = Instant.ofEpochMilli(it)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+            showDatePicker = false // Закрываем DatePicker после выбора даты
+        }
+    }
+
+    val selectedDate = transactionDate.value.toString()
 
     Box(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -423,6 +492,7 @@ fun DatePickerDocked() {
         }
     }
 }
+
 
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())

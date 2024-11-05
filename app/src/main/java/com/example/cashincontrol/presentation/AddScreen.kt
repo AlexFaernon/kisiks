@@ -27,7 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -37,6 +36,7 @@ import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -52,7 +52,7 @@ data class DataForm(
     val transactionDate: LocalDate,
     val transactionComment: String,
     val isRegular:Boolean,
-    val moneyAmount: Int,
+    val moneyAmount: Float,
 )
 
 
@@ -93,9 +93,15 @@ fun AddScreen(navController: NavController) {
                     transactionDate = transactionDate.value,
                     transactionComment = transactionComment.value,
                     isRegular = isRegular.value,
-                    moneyAmount = moneyAmount.value.toIntOrNull() ?: 0
+                    moneyAmount = moneyAmount.value.toFloatOrNull() ?: 0f
                 )
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
+                if (dataForm.transactionType == "Доход"){
+                    UserClass.AddNewIncome(dataForm.moneyAmount, dataForm.transactionKind, dataForm.transactionDate, dataForm.transactionCategory as IncomeCategory)
+                }
+                else{
+                    UserClass.AddNewExpenses(dataForm.moneyAmount, dataForm.transactionKind, dataForm.transactionDate, dataForm.transactionCategory as ExpensesCategory, dataForm.transactionComment)
+                }
                 navController.navigate("main")
             },
             colors = ButtonDefaults.buttonColors(
@@ -350,14 +356,16 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
         }
     }
     if (showDialog) {
-        AddCategoryDialog(categories = categoryList, onDismiss = { showDialog = false }, transactionType)
+        AddCategoryDialog(onDismiss = { showDialog = false }, transactionType)
     }
 }
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun AddCategoryDialog(categories: List<Category>, onDismiss: () -> Unit, transactionType: String) {
-    var newCategory: MutableState<Category> = mutableStateOf(IncomeCategory(""))
+fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String) {
+    var newCategory = remember {
+        mutableStateOf(if (transactionType == "Доход") IncomeCategory("") else ExpensesCategory(""))
+    }
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -371,8 +379,8 @@ fun AddCategoryDialog(categories: List<Category>, onDismiss: () -> Unit, transac
                 Text("Добавить новую категорию", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
-                    value = "newCategory",
-                    onValueChange = { newCategory = if (transactionType == "Доход") mutableStateOf(IncomeCategory(it)) else mutableStateOf(ExpensesCategory(it)) },
+                    value = newCategory.value.name,
+                    onValueChange = {newCategory.value = if (transactionType == "Доход") IncomeCategory(it) else ExpensesCategory(it)},
                     label = { Text("Название категории") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -402,7 +410,6 @@ fun AddCategoryDialog(categories: List<Category>, onDismiss: () -> Unit, transac
 
 @Composable
 fun FileUploadButton() {
-    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             Log.d("FileUpload", "Selected file: $it")
@@ -459,13 +466,12 @@ fun DatePickerDocked(transactionDate: MutableState<LocalDate>) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    // Используем LaunchedEffect для отслеживания изменений в selectedDateMillis
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let {
             transactionDate.value = Instant.ofEpochMilli(it)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
-            showDatePicker = false // Закрываем DatePicker после выбора даты
+            showDatePicker = false
         }
     }
 

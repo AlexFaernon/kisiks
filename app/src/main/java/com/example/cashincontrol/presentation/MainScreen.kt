@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
+import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -40,15 +41,15 @@ import com.example.cashincontrol.domain.transaction.Transaction
 import java.time.LocalDate
 
 
-val cat = ExpensesCategory("Продукты", R.drawable.icon_shop)
-val trans = listOf(ExpensesTransaction(933f,"МИР", LocalDate.now(), cat, "Магнит"),
-    ExpensesTransaction(4250f,"МИР", LocalDate.now(), cat, "Перекресток"),
-    ExpensesTransaction(10000f,"МИР", LocalDate.now(), cat, "Магнит"),
-    ExpensesTransaction(678.24f,"МИР", LocalDate.now(), cat, "Пятерочка"),
-    ExpensesTransaction(125f,"МИР", LocalDate.now(), cat, "Магнит"),
-    ExpensesTransaction(350f,"МИР", LocalDate.now(), cat, "Перекресток"),
-    ExpensesTransaction(200f,"МИР", LocalDate.now(), cat, "Перекресток"),
-    ExpensesTransaction(1299.99f,"МИР", LocalDate.now(), cat, "Перекресток"))
+//val cat = ExpensesCategory("Продукты", R.drawable.icon_shop)
+//val trans = listOf(ExpensesTransaction(933f,"МИР", LocalDate.now(), cat, "Магнит"),
+//    ExpensesTransaction(4250f,"МИР", LocalDate.now(), cat, "Перекресток"),
+//    ExpensesTransaction(10000f,"МИР", LocalDate.now(), cat, "Магнит"),
+//    ExpensesTransaction(678.24f,"МИР", LocalDate.now(), cat, "Пятерочка"),
+//    ExpensesTransaction(125f,"МИР", LocalDate.now(), cat, "Магнит"),
+//    ExpensesTransaction(350f,"МИР", LocalDate.now(), cat, "Перекресток"),
+//    ExpensesTransaction(200f,"МИР", LocalDate.now(), cat, "Перекресток"),
+//    ExpensesTransaction(1299.99f,"МИР", LocalDate.now(), cat, "Перекресток"))
 
 
 @Composable
@@ -63,7 +64,7 @@ fun MainScreen(navController: NavController){
             modifier = Modifier.fillMaxSize()
         ) {
             TopSection()
-            TransactionListScreen(trans)
+            TransactionListScreen(UserClass.transactions)
         }
 
         IconButton(
@@ -200,13 +201,14 @@ private fun TransactionCard(transaction: Transaction) {
                         color = Color.Gray
                     )
 
-                    val x = transaction as ExpensesTransaction
-
-                    Text(
-                        text = x.organization,
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
+                    if (transaction.category is ExpensesCategory){
+                        transaction as ExpensesTransaction
+                        Text(
+                            text = transaction.organization,
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
 
                 // Сумма транзакции

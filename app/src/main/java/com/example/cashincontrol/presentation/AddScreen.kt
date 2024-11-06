@@ -48,7 +48,7 @@ import java.util.Locale
 data class DataForm(
     val transactionType: String,
     val transactionCategory: Category,
-    val transactionKind: String,
+//    val transactionKind: String,
     val transactionDate: LocalDate,
     val transactionComment: String,
     val isRegular:Boolean,
@@ -61,7 +61,7 @@ data class DataForm(
 fun AddScreen(navController: NavController) {
     val transactionType = remember { mutableStateOf("Доход") }
     val transactionCategory = remember { mutableStateOf(UserClass.GetIncomeCategory().first() as Category) }
-    val transactionKind = remember { mutableStateOf("") }
+//    val transactionKind = remember { mutableStateOf("") }
     val transactionDate = remember { mutableStateOf(LocalDate.now()) }
     val transactionComment = remember { mutableStateOf("") }
     val isRegular = remember { mutableStateOf(true) }
@@ -73,10 +73,9 @@ fun AddScreen(navController: NavController) {
             .padding(start = 10.dp, top = 48.dp, end = 10.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TopSection(navController, transactionType)
+        TopSection(navController, transactionType, transactionCategory, transactionComment, moneyAmount)
         MainSection(
             transactionCategory,
-            transactionKind,
             transactionDate,
             transactionComment,
             isRegular,
@@ -89,7 +88,7 @@ fun AddScreen(navController: NavController) {
                 val dataForm = DataForm(
                     transactionType = transactionType.value,
                     transactionCategory = transactionCategory.value,
-                    transactionKind = transactionKind.value,
+//                    transactionKind = transactionKind.value,
                     transactionDate = transactionDate.value,
                     transactionComment = transactionComment.value,
                     isRegular = isRegular.value,
@@ -97,10 +96,10 @@ fun AddScreen(navController: NavController) {
                 )
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
                 if (dataForm.transactionType == "Доход"){
-                    UserClass.AddNewIncome(dataForm.moneyAmount, dataForm.transactionKind, dataForm.transactionDate, dataForm.transactionCategory as IncomeCategory)
+                    UserClass.AddNewIncome(dataForm.moneyAmount, dataForm.transactionDate, dataForm.transactionCategory as IncomeCategory)
                 }
                 else{
-                    UserClass.AddNewExpenses(dataForm.moneyAmount, dataForm.transactionKind, dataForm.transactionDate, dataForm.transactionCategory as ExpensesCategory, dataForm.transactionComment)
+                    UserClass.AddNewExpenses(dataForm.moneyAmount, dataForm.transactionDate, dataForm.transactionCategory as ExpensesCategory, dataForm.transactionComment)
                 }
                 navController.navigate("main")
             },
@@ -125,7 +124,11 @@ fun AddScreen(navController: NavController) {
 }
 
 @Composable
-private fun TopSection(navController: NavController, transactionType: MutableState<String>) {
+private fun TopSection(navController: NavController,
+                       transactionType: MutableState<String>,
+                       transactionCategory: MutableState<Category>,
+                       transactionComment: MutableState<String>,
+                       moneyAmount: MutableState<String>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,14 +150,14 @@ private fun TopSection(navController: NavController, transactionType: MutableSta
         )
 
         Spacer(modifier = Modifier.weight(35f))
-        TransactionDropdownMenu(transactionType)
+        TransactionDropdownMenu(transactionType,transactionCategory,transactionComment,moneyAmount)
     }
 }
 
 @Composable
 private fun MainSection(
     transactionCategory: MutableState<Category>,
-    transactionKind: MutableState<String>,
+//    transactionKind: MutableState<String>,
     transactionDate: MutableState<LocalDate>,
     transactionComment: MutableState<String>,
     isRegular: MutableState<Boolean>,
@@ -163,7 +166,7 @@ private fun MainSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         TransactionCategorySection(transactionCategory, transactionType)
-        TransactionKindSection(transactionKind)
+//        TransactionKindSection(transactionKind)
         TransactionDateSection(transactionDate)
         TransactionCommentSection(transactionComment)
         TransactionSwitchSection(isRegular)
@@ -200,6 +203,7 @@ private fun TransactionCommentSection(transactionComment: MutableState<String>) 
 private fun TransactionSwitchSection(isRegular: MutableState<Boolean>) {
     LabeledRow(label = "Сделать платеж регулярным") {
         Switch(
+            modifier = Modifier.size(width = 25.dp, height = 20.dp),
             checked = isRegular.value,
             onCheckedChange = { isRegular.value = it },
             colors = SwitchDefaults.colors(
@@ -253,7 +257,7 @@ fun TextWithPadding(text: String) {
         fontSize = 20.sp,
         fontWeight = FontWeight.Normal,
         modifier = Modifier
-            .padding(start = 22.dp, end = 32.dp, top = 3.dp, bottom = 3.dp)
+            .padding(start = 22.dp, end = 28.dp, top = 3.dp, bottom = 3.dp)
     )
 }
 
@@ -271,7 +275,10 @@ fun TextWithBackground(text: String, backgroundColor: Color, paddingValues: Padd
 }
 
 @Composable
-fun TransactionDropdownMenu(transactionType: MutableState<String>) {
+fun TransactionDropdownMenu(transactionType: MutableState<String>,
+                            transactionCategory: MutableState<Category>,
+                            transactionComment: MutableState<String>,
+                            moneyAmount: MutableState<String>) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -298,6 +305,7 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>) {
                 onClick = {
                     transactionType.value = "Расход"
                     expanded = false
+                    resetFormFields(transactionCategory, transactionComment, moneyAmount, true)
                 }
             )
             DropdownMenuItem(
@@ -305,10 +313,22 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>) {
                 onClick = {
                     transactionType.value = "Доход"
                     expanded = false
+                    resetFormFields(transactionCategory, transactionComment, moneyAmount, false)
                 }
             )
         }
     }
+}
+
+fun resetFormFields(
+    transactionCategory: MutableState<Category>,
+    transactionComment: MutableState<String>,
+    moneyAmount: MutableState<String>,
+    isExpenses: Boolean
+) {
+    transactionCategory.value = if (isExpenses) UserClass.GetExpensesCategory().first() else UserClass.GetIncomeCategory().first()
+    transactionComment.value = ""
+    moneyAmount.value = ""
 }
 
 @Composable

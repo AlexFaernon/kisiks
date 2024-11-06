@@ -149,6 +149,10 @@ private fun TopSection() {
 
 @Composable
 private fun TransactionCard(transaction: Transaction) {
+    val monthNames = listOf(
+        "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
+        "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
+    )
 
     Card(
         modifier = Modifier
@@ -165,7 +169,7 @@ private fun TransactionCard(transaction: Transaction) {
         ) {
             // Дата транзакции
             Text(
-                text = transaction.date.dayOfMonth.toString() + " " + transaction.date.month.name.lowercase(),
+                text = transaction.date.dayOfMonth.toString() + " " + monthNames[transaction.date.monthValue - 1],
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 5.dp)
@@ -195,11 +199,11 @@ private fun TransactionCard(transaction: Transaction) {
                         fontWeight = FontWeight.Normal
                     )
 
-                    Text(
-                        text = transaction.card,
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
+//                    Text(
+//                        text = transaction.card,
+//                        fontSize = 16.sp,
+//                        color = Color.Gray
+//                    )
 
                     if (transaction.category is ExpensesCategory){
                         transaction as ExpensesTransaction

@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
+import com.example.cashincontrol.domain.bankParcing.BankParcer
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
@@ -433,6 +434,7 @@ fun FileUploadButton() {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             Log.d("FileUpload", "Selected file: $it")
+            BankParcer.parse(it)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.cashincontrol.domain.bankParcing
 
 import android.net.Uri
+import android.util.Log
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.canvas.parser.PdfCanvasProcessor
@@ -11,9 +12,9 @@ import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStra
 class BankParcer() {
     companion object {
         fun parse(path: Uri) {
-            val reader = PdfReader("./src/main/resources/file.pdf")
+            val reader = PdfReader("/res/raw/file.pdf")
             val pdfDoc = PdfDocument(reader)
-
+            Log.d("Parse", "Start")
             val listener = FilteredEventListener()
             val extractionStrategy: LocationTextExtractionStrategy = listener
                 .attachEventListener(LocationTextExtractionStrategy())

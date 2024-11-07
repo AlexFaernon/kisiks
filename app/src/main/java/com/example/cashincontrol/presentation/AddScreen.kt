@@ -34,11 +34,13 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.bankParcing.BankParcer
+import com.example.cashincontrol.domain.bankParcing.BankParser
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
-import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfReader
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -431,10 +433,16 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String) {
 
 @Composable
 fun FileUploadButton() {
+    val pdfUri = remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        pdfUri.value = uri
         uri?.let {
-            Log.d("FileUpload", "Selected file: $it")
-            BankParcer.parse(it)
+            val inputStream = context.contentResolver.openInputStream(it)
+            inputStream?.use { _ ->
+                BankParser.parse(inputStream)
+            }
         }
     }
 

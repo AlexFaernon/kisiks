@@ -15,7 +15,7 @@ class UserClass {
             mutableListOf(ExpensesCategory("Продукты"), IncomeCategory("Зарплата"))
         var currentMoney: Float = 1000F
 
-        public fun GetExpensesCategory(): List<ExpensesCategory> {
+        public fun getExpensesCategory(): List<ExpensesCategory> {
             val result: MutableList<ExpensesCategory> = mutableListOf()
             for (category in categories) {
                 if (category is ExpensesCategory) {
@@ -52,6 +52,30 @@ class UserClass {
         ) {
             transactions.add(IncomeTransaction(sum, date, category))
             currentMoney += sum
+        }
+
+        public fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
+            val category = checkCategory(categoryName, isExpenses)
+            category?.let {
+                return category
+            }
+
+            return createCategory(categoryName, isExpenses)
+        }
+
+        public fun createCategory(categoryName: String, isExpenses: Boolean): Category{
+            val category = checkCategory(categoryName, isExpenses)
+            var newCategory: Category
+            category?: run {
+                newCategory = if (isExpenses) { ExpensesCategory(categoryName) } else { IncomeCategory(categoryName) }
+                return newCategory
+            }
+            throw IllegalArgumentException("Category already exists")
+        }
+
+        fun checkCategory(categoryName: String, isExpenses: Boolean): Category?{
+            val targetType = if (isExpenses) ExpensesCategory::class.simpleName else IncomeCategory::class.simpleName
+            return categories.firstOrNull { it.name == categoryName && it::class.simpleName == targetType}
         }
     }
 }

@@ -38,9 +38,6 @@ import com.example.cashincontrol.domain.bankParcing.BankParser
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
-import com.itextpdf.kernel.pdf.PdfDocument
-import com.itextpdf.kernel.pdf.PdfReader
-import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -331,7 +328,7 @@ fun resetFormFields(
     moneyAmount: MutableState<String>,
     isExpenses: Boolean
 ) {
-    transactionCategory.value = if (isExpenses) UserClass.GetExpensesCategory().first() else UserClass.GetIncomeCategory().first()
+    transactionCategory.value = if (isExpenses) UserClass.getExpensesCategory().first() else UserClass.GetIncomeCategory().first()
     transactionComment.value = ""
     moneyAmount.value = ""
 }
@@ -340,7 +337,7 @@ fun resetFormFields(
 fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactionType: String) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    var categoryList = if (transactionType == "Доход") UserClass.GetIncomeCategory() else UserClass.GetExpensesCategory()
+    var categoryList = if (transactionType == "Доход") UserClass.GetIncomeCategory() else UserClass.getExpensesCategory()
 
     Box(
         modifier = Modifier

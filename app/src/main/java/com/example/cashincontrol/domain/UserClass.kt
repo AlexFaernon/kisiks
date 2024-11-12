@@ -68,6 +68,7 @@ class UserClass {
             var newCategory: Category
             category?: run {
                 newCategory = if (isExpenses) { ExpensesCategory(categoryName) } else { IncomeCategory(categoryName) }
+                categories.add(newCategory)
                 return newCategory
             }
             throw IllegalArgumentException("Category already exists")

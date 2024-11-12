@@ -78,6 +78,7 @@ fun AddScreen(navController: NavController) {
     ) {
         TopSection(navController, transactionType, transactionCategory, transactionComment, moneyAmount)
         MainSection(
+            navController,
             transactionCategory,
             transactionDate,
             transactionComment,
@@ -159,6 +160,7 @@ private fun TopSection(navController: NavController,
 
 @Composable
 private fun MainSection(
+    navController: NavController,
     transactionCategory: MutableState<Category>,
 //    transactionKind: MutableState<String>,
     transactionDate: MutableState<LocalDate>,
@@ -173,7 +175,7 @@ private fun MainSection(
         TransactionDateSection(transactionDate)
         TransactionCommentSection(transactionComment)
         TransactionSwitchSection(isRegular)
-        FileUploadButton()
+        FileUploadButton(navController)
         MoneyInputField(moneyAmount)
     }
 }
@@ -432,7 +434,7 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String) {
 }
 
 @Composable
-fun FileUploadButton() {
+fun FileUploadButton(navController: NavController) {
     val pdfUri = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
 
@@ -442,6 +444,7 @@ fun FileUploadButton() {
             val inputStream = context.contentResolver.openInputStream(it)
             inputStream?.use { _ ->
                 BankParser.parse(inputStream)
+                navController.navigate("main")
             }
         }
     }

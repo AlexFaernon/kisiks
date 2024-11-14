@@ -37,17 +37,6 @@ import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
 
 
-//val cat = ExpensesCategory("Продукты", R.drawable.icon_shop)
-//val trans = listOf(ExpensesTransaction(933f,"МИР", LocalDate.now(), cat, "Магнит"),
-//    ExpensesTransaction(4250f,"МИР", LocalDate.now(), cat, "Перекресток"),
-//    ExpensesTransaction(10000f,"МИР", LocalDate.now(), cat, "Магнит"),
-//    ExpensesTransaction(678.24f,"МИР", LocalDate.now(), cat, "Пятерочка"),
-//    ExpensesTransaction(125f,"МИР", LocalDate.now(), cat, "Магнит"),
-//    ExpensesTransaction(350f,"МИР", LocalDate.now(), cat, "Перекресток"),
-//    ExpensesTransaction(200f,"МИР", LocalDate.now(), cat, "Перекресток"),
-//    ExpensesTransaction(1299.99f,"МИР", LocalDate.now(), cat, "Перекресток"))
-
-
 @Composable
 fun MainScreen(navController: NavController){
     Box(
@@ -139,7 +128,6 @@ private fun TopSection() {
                 .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         )
-        Spacer(modifier = Modifier.height(6.dp))
     }
 }
 
@@ -226,7 +214,7 @@ private fun TransactionListScreen(transactions: List<Transaction>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 23.dp, end = 23.dp, bottom = 170.dp),
+            .padding(start = 23.dp, end = 23.dp, bottom = 150.dp),
         verticalArrangement = Arrangement.spacedBy(13.dp)
     ) {
         itemsIndexed(transactions){

@@ -53,7 +53,8 @@ fun AnalyticsScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp, top = 48.dp, end = 10.dp),
+                .padding(start = 10.dp, top = 48.dp, end = 10.dp)
+                .background(Color.White),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -142,7 +143,8 @@ fun createDonutChartData(): PieChartData {
     val expenseData = UserClass.getExpensesTransactions()
         .groupBy { it.category.name }
         .map { (categoryName, transactions) ->
-            val totalSum = String.format("%.2f", transactions.map { it.sum }.sum()).toFloat()
+//            val totalSum = (String.format("%.2f", transactions.map { it.sum }.sum())).toFloat()
+            val totalSum = transactions.map { it.sum }.sum()
             val color = categoryColors.getOrPut(categoryName) { getRandomColor() }
             PieChartData.Slice(categoryName, totalSum, color)
         }

@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -295,7 +296,10 @@ fun TransactionDropdownMenu(transactionType: MutableState<String>,
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Normal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.align(Alignment.Center)
+
         )
 
         DropdownMenu(
@@ -352,7 +356,9 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
             fontSize = 20.sp,
             color = Color.Black,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.align(Alignment.Center)
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 5.dp).align(Alignment.Center)
         )
 
         DropdownMenu(

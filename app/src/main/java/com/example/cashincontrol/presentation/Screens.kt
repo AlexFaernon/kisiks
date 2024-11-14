@@ -16,11 +16,7 @@ fun Main(navController: NavController) {
 
 @Composable
 fun Analytic() {
-    Text(
-        modifier = Modifier.fillMaxSize().wrapContentHeight(),
-        text = "Analytic",
-        textAlign = TextAlign.Center
-    )
+    AnalyticsScreen()
 }
 @Composable
 fun Purpose() {

@@ -79,5 +79,10 @@ class UserClass {
             val targetType = if (isExpenses) ExpensesCategory::class.simpleName else IncomeCategory::class.simpleName
             return categories.firstOrNull { it.name == categoryName && it::class.simpleName == targetType}
         }
+
+        fun getExpensesTransactions(): List<Transaction>
+        {
+            return transactions.filterIsInstance<ExpensesTransaction>()
+        }
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,10 +34,7 @@ import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
-import com.example.cashincontrol.domain.transaction.IncomeCategory
-import com.example.cashincontrol.domain.transaction.IncomeTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
-import java.time.LocalDate
 
 
 //val cat = ExpensesCategory("Продукты", R.drawable.icon_shop)
@@ -205,14 +201,11 @@ private fun TransactionCard(transaction: Transaction) {
 //                        color = Color.Gray
 //                    )
 
-                    if (transaction.category is ExpensesCategory){
-                        transaction as ExpensesTransaction
-                        Text(
-                            text = transaction.organization,
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    Text(
+                        text = transaction.commentary,
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
                 }
 
                 // Сумма транзакции

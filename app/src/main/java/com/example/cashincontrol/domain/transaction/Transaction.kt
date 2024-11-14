@@ -8,4 +8,5 @@ abstract class Transaction(){
    // abstract val card: String
     abstract val date: LocalDate
     abstract val category: Category
+    abstract val commentary: String
 }

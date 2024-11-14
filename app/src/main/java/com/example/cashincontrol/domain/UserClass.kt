@@ -39,18 +39,19 @@ class UserClass {
             sum: Float,
             date: LocalDate,
             category: ExpensesCategory,
-            organization: String
+            commentary: String
         ) {
-            transactions.add(ExpensesTransaction(sum, date, category, organization))
+            transactions.add(ExpensesTransaction(sum, date, category, commentary))
             currentMoney -= sum
         }
 
         public fun AddNewIncome(
             sum: Float,
             date: LocalDate,
-            category: IncomeCategory
+            category: IncomeCategory,
+            commentary: String
         ) {
-            transactions.add(IncomeTransaction(sum, date, category))
+            transactions.add(IncomeTransaction(sum, date, category, commentary))
             currentMoney += sum
         }
 

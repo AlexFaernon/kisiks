@@ -97,7 +97,7 @@ fun AddScreen(navController: NavController) {
                 )
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
                 if (dataForm.transactionType == "Доход"){
-                    UserClass.AddNewIncome(dataForm.moneyAmount, dataForm.transactionDate, dataForm.transactionCategory as IncomeCategory)
+                    UserClass.AddNewIncome(dataForm.moneyAmount, dataForm.transactionDate, dataForm.transactionCategory as IncomeCategory, dataForm.transactionComment)
                 }
                 else{
                     UserClass.AddNewExpenses(dataForm.moneyAmount, dataForm.transactionDate, dataForm.transactionCategory as ExpensesCategory, dataForm.transactionComment)

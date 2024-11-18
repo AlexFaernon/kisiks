@@ -1,15 +1,13 @@
 package com.example.cashincontrol.domain.bankParcing
 
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.transaction.ExpensesCategory
-import com.example.cashincontrol.domain.transaction.IncomeCategory
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.canvas.parser.PdfCanvasProcessor
 import com.itextpdf.kernel.pdf.canvas.parser.listener.FilteredEventListener
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy
 import java.io.InputStream
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
@@ -40,7 +38,7 @@ class BankParser() {
             for (transactionMatch in transactionParcer.findAll(stringBuilder.toString())) {
                 val (datetimeStr, categoryStr, sumStr, balanceStr, commentary) = transactionMatch.destructured
 
-                val datetime = LocalDate.parse(
+                val datetime = LocalDateTime.parse(
                     datetimeStr,
                     DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
                 )
@@ -48,21 +46,7 @@ class BankParser() {
                 val category = UserClass.getOrCreateCategory(categoryStr, isExpenses)
                 val sum = sumStr.replace(',', '.').replace(" ", "").toFloat()
 
-                if (isExpenses) {
-                    UserClass.AddNewExpenses(
-                        sum,
-                        datetime,
-                        category as ExpensesCategory,
-                        commentary
-                    )
-                } else {
-                    UserClass.AddNewIncome(
-                        sum,
-                        datetime,
-                        category as IncomeCategory,
-                        commentary
-                    )
-                }
+                UserClass.addTransaction(isExpenses, sum, datetime, category, commentary, true)
             }
             pdfDoc.close()
         }

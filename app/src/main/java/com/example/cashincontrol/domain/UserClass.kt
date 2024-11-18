@@ -6,7 +6,7 @@ import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
 import com.example.cashincontrol.domain.transaction.IncomeTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class UserClass {
     companion object {
@@ -35,24 +35,26 @@ class UserClass {
             return result
         }
 
-        public fun AddNewExpenses(
+        public fun addTransaction(
+            isExpenses: Boolean,
             sum: Float,
-            date: LocalDate,
-            category: ExpensesCategory,
-            commentary: String
+            date: LocalDateTime,
+            category: Category,
+            commentary: String,
+            checkUnique: Boolean = false
         ) {
-            transactions.add(ExpensesTransaction(sum, date, category, commentary))
-            currentMoney -= sum
-        }
+            val newTransaction = if (isExpenses)
+                ExpensesTransaction(sum, date, category as ExpensesCategory, commentary)
+            else
+                IncomeTransaction(sum, date,category as IncomeCategory, commentary)
 
-        public fun AddNewIncome(
-            sum: Float,
-            date: LocalDate,
-            category: IncomeCategory,
-            commentary: String
-        ) {
-            transactions.add(IncomeTransaction(sum, date, category, commentary))
-            currentMoney += sum
+            val insertIndex = transactions.binarySearch(newTransaction, compareBy<Transaction> { it.date }.reversed())
+            if (checkUnique && insertIndex >= 0) {
+                return
+            }
+
+            transactions.add(-insertIndex - 1, newTransaction)
+            currentMoney += if (isExpenses) -sum else sum
         }
 
         public fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{

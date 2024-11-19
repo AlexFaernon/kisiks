@@ -2,7 +2,6 @@ package com.example.cashincontrol.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,20 +23,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.PlotType
+import co.yml.charts.common.model.Point
+import co.yml.charts.common.utils.DataUtils
+import co.yml.charts.common.utils.DataUtils.getColorPaletteList
+import co.yml.charts.ui.barchart.GroupBarChart
+import co.yml.charts.ui.barchart.models.BarData
+import co.yml.charts.ui.barchart.models.BarPlotData
+import co.yml.charts.ui.barchart.models.GroupBar
+import co.yml.charts.ui.barchart.models.GroupBarChartData
 import co.yml.charts.ui.piechart.charts.DonutPieChart
-import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.cashincontrol.domain.UserClass
+import com.example.cashincontrol.domain.transaction.ExpensesTransaction
+import com.example.cashincontrol.domain.transaction.IncomeTransaction
+import com.example.cashincontrol.domain.transaction.Transaction
+import java.time.LocalDate
 import kotlin.random.Random
 
-@Preview()
 @Composable
 fun AnalyticsScreen() {
     if (UserClass.transactions.isEmpty()) {
@@ -66,9 +75,88 @@ fun AnalyticsScreen() {
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             ExpensesDonutChart()
+            Text(
+                text = "Сравнение доходов и расходов",
+                fontSize = 20.sp,
+                color = Color.Black,
+                modifier = Modifier
+                    .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+            MainBarChart(UserClass.transactions)
         }
     }
 }
+
+@Composable
+fun MainBarChart(transactions: List<Transaction>) {
+    val months = 12
+    val barChartData = prepareGroupBarChartData(transactions, months)
+
+    val maxYValue = barChartData
+        .flatMap { it.barList }
+        .maxOfOrNull { it.point.y }
+        ?.let { adaptiveRoundUp(it) } ?: 0f
+
+    val scaledBarChartData = barChartData.map { groupBar ->
+        groupBar.copy(
+            barList = groupBar.barList.map { barData ->
+                barData.copy(
+                    point = barData.point.copy(
+                        y = (barData.point.y / maxYValue) * maxYValue
+                    )
+                )
+            }
+        )
+    }
+
+    val xAxisData = AxisData.Builder()
+        .axisStepSize(20.dp)
+        .steps(months - 1)
+        .bottomPadding(20.dp)
+        .labelData { index -> monthName(index + 1) }
+        .build()
+
+    val yAxisData = AxisData.Builder()
+        .steps(5)
+        .labelAndAxisLinePadding(10.dp)
+        .axisOffset(50.dp)
+        .labelData { index ->
+            (index * (maxYValue / 5)).toInt().toString() // Подписи делений оси Y
+        }
+        .build()
+
+    GroupBarChart(
+        modifier = Modifier
+            .height(300.dp)
+            .fillMaxWidth(),
+        groupBarChartData = GroupBarChartData(
+            barPlotData = BarPlotData(
+                groupBarList = scaledBarChartData,
+                barColorPaletteList = listOf(
+                    Color(0xFFFF9800),
+                    Color(0xFF9C27B0)
+                ),
+            ),
+            xAxisData = xAxisData,
+            yAxisData = yAxisData
+        )
+    )
+}
+
+fun adaptiveRoundUp(value: Float): Float {
+    return when {
+        value <= 100 -> roundUpToNearest(value, 10)
+        value <= 1000 -> roundUpToNearest(value, 100)
+        else -> roundUpToNearest(value, 1000)
+    }
+}
+
+fun roundUpToNearest(value: Float, nearest: Int): Float {
+    return ((value + nearest - 1) / nearest).toInt() * nearest.toFloat()
+}
+
+
 
 @Composable
 private fun ExpensesDonutChart() {
@@ -102,14 +190,14 @@ private fun ExpensesDonutChart() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(donutChartData.slices) { slice ->
-                LegendItem(slice.label, slice.color)
+                PieLegendItem(slice.label, slice.color)
             }
         }
     }
 }
 
 @Composable
-fun LegendItem(label: String, color: Color) {
+fun PieLegendItem(label: String, color: Color) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(start = 16.dp)
@@ -154,4 +242,36 @@ fun createDonutChartData(): PieChartData {
         plotType = PlotType.Donut
     )
 }
+
+fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int): List<GroupBar> {
+    val currentYear = LocalDate.now().year
+    val filteredTransactions = transactions.filter { it.date.year == currentYear }
+    val groupedTransactions = filteredTransactions.groupBy { it.date.monthValue }
+    return (1..months).map { month ->
+        val income = groupedTransactions[month]?.filterIsInstance<IncomeTransaction>()?.map { it.sum }?.sum() ?: 0.0
+        val expense = groupedTransactions[month]?.filterIsInstance<ExpensesTransaction>()?.map { it.sum }?.sum() ?: 0.0
+
+        GroupBar(
+            label = monthName(month),
+            barList = listOf(
+                BarData(
+                    point = Point(month.toFloat(), income.toFloat()),
+                    color = Color(0xFFFF9800),
+                    label = "Доходы"
+                ),
+                BarData(
+                    point = Point(month.toFloat(), expense.toFloat()),
+                    color = Color(0xFF9C27B0),
+                    label = "Расходы"
+                )
+            )
+        )
+    }
+}
+
+private fun monthName(month: Int): String {
+    val monthNames = listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")
+    return monthNames[month - 1]
+}
+
 

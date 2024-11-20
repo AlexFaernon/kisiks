@@ -85,8 +85,8 @@ data class DataTargetForm(
     val targetSum: Float,
     val targetDate: LocalDate,
     val monthlyPayment: Float,
+    val monthlyPaymentPurpose: Float,
     val isNotifications:Boolean,
-    val moneyAmount: Float,
 )
 
 
@@ -97,8 +97,8 @@ fun AddTargetScreen(navController: NavController) {
     val targetSum = remember { mutableStateOf("") }
     val targetDate = remember { mutableStateOf(LocalDate.now()) }
     val monthlyPayment = remember { mutableStateOf("") }
+    val monthlyPaymentPurpose = remember { mutableStateOf("") }
     val isNotifications = remember { mutableStateOf(true) }
-    val moneyAmount = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -112,8 +112,8 @@ fun AddTargetScreen(navController: NavController) {
             targetSum,
             targetDate,
             monthlyPayment,
+            monthlyPaymentPurpose,
             isNotifications,
-            moneyAmount,
         )
 
         Button(
@@ -123,8 +123,8 @@ fun AddTargetScreen(navController: NavController) {
                     targetSum = targetSum.value.toFloatOrNull() ?: 0f,
                     targetDate = targetDate.value,
                     monthlyPayment = monthlyPayment.value.toFloatOrNull() ?: 0f,
+                    monthlyPaymentPurpose =monthlyPaymentPurpose.value.toFloatOrNull() ?: 0f,
                     isNotifications = isNotifications.value,
-                    moneyAmount = moneyAmount.value.toFloatOrNull() ?: 0f
                 )
                 Log.d("СОХРАНИТЬ ЦЕЛЬ", "DataForm: $dataForm")
 //                val isExpenses = dataForm.transactionType != "Доход"
@@ -184,17 +184,16 @@ private fun MainSection(
     targetSum: MutableState<String>,
     targetDate: MutableState<LocalDate>,
     monthlyPayment: MutableState<String>,
+    monthlyPaymentPurpose: MutableState<String>,
     isNotifications: MutableState<Boolean>,
-    moneyAmount: MutableState<String>
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         TargetNameSection(targetName)
         TargetSumSection(targetSum)
         TargetDateSection(targetDate)
         MonthlyPaymentSection(monthlyPayment)
+        MonthlyPaymentPurposeSection(monthlyPaymentPurpose)
         TargetSwitchSection(isNotifications)
-        CalculateButton()
-        MoneyInputField(moneyAmount)
     }
 }
 
@@ -218,6 +217,11 @@ private fun TargetDateSection(targetDate: MutableState<LocalDate>) {
 @Composable
 private fun MonthlyPaymentSection(monthlyPayment: MutableState<String>) {
     LabeledRowWithTextField(label = "Ежемесячный платеж", textState = monthlyPayment)
+}
+
+@Composable
+private fun MonthlyPaymentPurposeSection(monthlyPaymentPurpose: MutableState<String>) {
+    LabeledRowWithTextField(label = "Учитывая инфляцию", textState = monthlyPaymentPurpose)
 }
 
 @Composable

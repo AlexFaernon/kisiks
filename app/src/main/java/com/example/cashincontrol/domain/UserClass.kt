@@ -1,5 +1,6 @@
 package com.example.cashincontrol.domain
 
+import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
@@ -13,6 +14,7 @@ class UserClass {
         val transactions: MutableList<Transaction> = mutableListOf()
         val categories: MutableList<Category> =
             mutableListOf(ExpensesCategory("Продукты"), IncomeCategory("Зарплата"))
+        public var goal: Goal? = null
         var currentMoney: Float = 1000F
 
         public fun getExpensesCategory(): List<ExpensesCategory> {
@@ -86,7 +88,5 @@ class UserClass {
         {
             return transactions.filterIsInstance<ExpensesTransaction>()
         }
-
-
     }
 }

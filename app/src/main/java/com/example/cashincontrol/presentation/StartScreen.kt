@@ -18,6 +18,7 @@ fun Start() {
             if (currentRoute in listOf(
                     BottomItem.ScreenMain.route,
                     BottomItem.ScreenAnalytics.route,
+                    BottomItem.ScreenTarget.route,
                     BottomItem.ScreenPurpose.route,
                     BottomItem.ScreenSettings.route)
                 ) {

@@ -18,6 +18,7 @@ fun Main(navController: NavController) {
 fun Analytic() {
     AnalyticsScreen()
 }
+
 @Composable
 fun Purpose() {
     Text(
@@ -26,6 +27,12 @@ fun Purpose() {
         textAlign = TextAlign.Center
     )
 }
+
+@Composable
+fun Target(navController: NavController) {
+    AddTargetScreen(navController)
+}
+
 @Composable
 fun Settings() {
         Text(

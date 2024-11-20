@@ -19,6 +19,9 @@ fun NavGraph(
         composable("purpose") {
             Purpose()
         }
+        composable("target") {
+            Target(navHostController)
+        }
         composable("settings") {
             Settings()
         }

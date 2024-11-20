@@ -18,6 +18,7 @@ fun BottomNavigation(
     val listItems = listOf(
         BottomItem.ScreenMain,
         BottomItem.ScreenAnalytics,
+        BottomItem.ScreenTarget,
         BottomItem.ScreenPurpose,
         BottomItem.ScreenSettings
     )

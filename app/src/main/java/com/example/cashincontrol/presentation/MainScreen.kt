@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -49,7 +51,18 @@ fun MainScreen(navController: NavController){
             modifier = Modifier.fillMaxSize()
         ) {
             TopSection()
-            TransactionListScreen(UserClass.transactions)
+            if(UserClass.transactions.isEmpty()){
+                Text(
+                    modifier = Modifier.fillMaxSize().wrapContentHeight().align(Alignment.CenterHorizontally),
+                    text = "Нет данных, добавьте платежи",
+                    fontSize = 26.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+            else {
+                TransactionListScreen(UserClass.transactions)
+            }
         }
 
         IconButton(

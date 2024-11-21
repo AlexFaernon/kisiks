@@ -19,14 +19,17 @@ fun NavGraph(
         composable("purpose") {
             Purpose()
         }
-        composable("target") {
-            Target(navHostController)
+        composable("goal") {
+            Goal(navHostController)
         }
         composable("settings") {
             Settings()
         }
         composable("add") {
             AddScreen(navHostController)
+        }
+        composable("addGoal") {
+            AddGoalScreen(navHostController)
         }
     }
 }

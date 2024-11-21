@@ -18,8 +18,8 @@ fun Start() {
             if (currentRoute in listOf(
                     BottomItem.ScreenMain.route,
                     BottomItem.ScreenAnalytics.route,
-                    BottomItem.ScreenTarget.route,
                     BottomItem.ScreenPurpose.route,
+                    BottomItem.ScreenGoal.route,
                     BottomItem.ScreenSettings.route)
                 ) {
                 BottomNavigation(navController = navController)

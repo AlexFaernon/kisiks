@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,20 +19,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.PlotType
 import co.yml.charts.common.model.Point
-import co.yml.charts.common.utils.DataUtils
-import co.yml.charts.common.utils.DataUtils.getColorPaletteList
 import co.yml.charts.ui.barchart.GroupBarChart
 import co.yml.charts.ui.barchart.models.BarData
 import co.yml.charts.ui.barchart.models.BarPlotData
@@ -40,6 +40,7 @@ import co.yml.charts.ui.barchart.models.GroupBarChartData
 import co.yml.charts.ui.piechart.charts.DonutPieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
+import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeTransaction
@@ -64,7 +65,7 @@ fun AnalyticsScreen() {
                 .fillMaxSize()
                 .padding(start = 10.dp, top = 48.dp, end = 10.dp)
                 .background(Color.White),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
                 text = "Расходы по категориям",
@@ -84,7 +85,50 @@ fun AnalyticsScreen() {
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             MainBarChart(UserClass.transactions)
+            BottomCard("Достижение “Финансовый гений", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
+            BottomCard("Подсказка", "Отличная идея - сохранять небольшую часть дохода (5%-10%) в пользу финансовой подушки безопасности.", R.drawable.icon_hint)
         }
+    }
+}
+
+@Composable
+fun BottomCard(
+    title: String,
+    description: String,
+    icon: Int
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = Color.Unspecified
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = description,
+            fontSize = 16.sp,
+            color = Color.Black
+        )
     }
 }
 
@@ -122,13 +166,13 @@ fun MainBarChart(transactions: List<Transaction>) {
         .labelAndAxisLinePadding(10.dp)
         .axisOffset(50.dp)
         .labelData { index ->
-            (index * (maxYValue / 5)).toInt().toString() // Подписи делений оси Y
+            (index * (maxYValue / 5)).toInt().toString()
         }
         .build()
 
     GroupBarChart(
         modifier = Modifier
-            .height(300.dp)
+            .height(250.dp)
             .fillMaxWidth(),
         groupBarChartData = GroupBarChartData(
             barPlotData = BarPlotData(

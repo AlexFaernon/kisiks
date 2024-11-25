@@ -20,11 +20,7 @@ fun Analytic() {
 
 @Composable
 fun Purpose() {
-    Text(
-        modifier = Modifier.fillMaxSize().wrapContentHeight(),
-        text = "Purpose",
-        textAlign = TextAlign.Center
-    )
+    PurposeScreen()
 }
 
 @Composable

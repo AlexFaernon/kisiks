@@ -8,6 +8,7 @@ data class Goal(
     val sum: Float,
     val targetDate: LocalDate){
     val startDate: LocalDate = LocalDate.now()
+
     public fun monthlyPayment(): Float{
         val months = Period.between(startDate, targetDate).months
         return sum / months

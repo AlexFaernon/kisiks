@@ -1,25 +1,19 @@
 package com.example.cashincontrol.presentation
 
-import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -29,32 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import co.yml.charts.axis.AxisData
-import co.yml.charts.common.model.PlotType
-import co.yml.charts.common.model.Point
-import co.yml.charts.ui.barchart.GroupBarChart
-import co.yml.charts.ui.barchart.models.BarData
-import co.yml.charts.ui.barchart.models.BarPlotData
-import co.yml.charts.ui.barchart.models.GroupBar
-import co.yml.charts.ui.barchart.models.GroupBarChartData
-import co.yml.charts.ui.piechart.charts.DonutPieChart
-import co.yml.charts.ui.piechart.models.PieChartConfig
-import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.transaction.Category
-import com.example.cashincontrol.domain.transaction.ExpensesTransaction
-import com.example.cashincontrol.domain.transaction.IncomeTransaction
-import com.example.cashincontrol.domain.transaction.Transaction
-import java.time.LocalDate
-import kotlin.random.Random
+import com.example.cashincontrol.domain.goals.Inflation
+import com.example.cashincontrol.domain.transaction.ExpensesCategory
 
 @Preview
 @Composable
-fun PurposeScreen() {
+fun InflationScreen() {
     if (UserClass.transactions.isEmpty()) {
         Text(
             modifier = Modifier.fillMaxSize().wrapContentHeight(),
@@ -68,19 +48,19 @@ fun PurposeScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp, top = 48.dp, end = 10.dp)
+                .padding(start = 10.dp, top = 30.dp, end = 10.dp)
                 .background(Color.White),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            MainPurpose()
-            DynamicPurpose()
-            CategoryPurpose()
+            MainInflation()
+            DynamicInflation()
+            CategoryInflation()
         }
     }
 }
 
 @Composable
-fun MainPurpose(){
+fun MainInflation(){
     Text(
         text = "Личная инфляция",
         fontSize = 20.sp,
@@ -116,7 +96,7 @@ fun MainPurpose(){
 }
 
 @Composable
-fun DynamicPurpose(){
+fun DynamicInflation(){
     Text(
         text = "Динамика",
         fontSize = 20.sp,
@@ -146,8 +126,11 @@ fun DynamicPurpose(){
 }
 
 @Composable
-fun CategoryPurpose(){
-    val block = listOf(99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f )
+fun CategoryInflation(){
+    Inflation.updateCategoryInflation()
+    val inflation = Inflation.CategoryInflation
+    Log.d("ИНФЛЯЦИЯ", "DataForm: ${inflation.entries.size}")
+//    val block = listOf(99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f )
     Text(
         text = "Категории",
         fontSize = 20.sp,
@@ -156,11 +139,11 @@ fun CategoryPurpose(){
             .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
             .padding(horizontal = 8.dp, vertical = 4.dp)
     )
-    CategoriesPurposeGrid(block)
+    CategoriesInflationGrid(inflation)
 }
 
 @Composable
-fun CategoriesPurposeGrid(purposes: List<Float>) {
+fun CategoriesInflationGrid(inflation:  Map<ExpensesCategory, Float>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -169,35 +152,48 @@ fun CategoriesPurposeGrid(purposes: List<Float>) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(purposes.size) { index ->
-            CategoryPurposeCard(purposes[index])
+        items(inflation.entries.toList().size) { index ->
+            CategoryInflationCard(inflation.entries.toList()[index])
         }
     }
 }
 
 @Composable
-fun CategoryPurposeCard(purpose: Float, /*category: Category*/){
+fun CategoryInflationCard(inflation: Map. Entry<ExpensesCategory, Float>){
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(8.dp)
     ) {
-        Column() {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
-                text = "$purpose %",
+                text = String.format("%.1f %%", inflation.value),
                 fontSize = 24.sp,
                 color = Color.Black,
             )
             Text(
-                text = "Супермаркеты"/*category.name*/,
+                text = inflation.key.name.limit(15),
                 fontSize = 14.sp,
                 color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
+
+        val iconRes = if (inflation.value < 0) R.drawable.icon_down else R.drawable.icon_up
+
         Icon(
-            painter = painterResource(R.drawable.icon_up),
+            painter = painterResource(iconRes),
             contentDescription = null,
             modifier = Modifier.size(20.dp),
             tint = Color.Unspecified
         )
     }
+}
+
+fun String.limit(maxLength: Int): String {
+    return if (this.length > maxLength) this.take(maxLength) + "..." else this
 }

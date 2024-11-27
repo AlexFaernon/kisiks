@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -17,6 +19,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import co.yml.charts.axis.AxisData
+import co.yml.charts.common.model.Point
+import co.yml.charts.ui.linechart.LineChart
+import co.yml.charts.ui.linechart.model.GridLines
+import co.yml.charts.ui.linechart.model.IntersectionPoint
+import co.yml.charts.ui.linechart.model.Line
+import co.yml.charts.ui.linechart.model.LineChartData
+import co.yml.charts.ui.linechart.model.LinePlotData
+import co.yml.charts.ui.linechart.model.LineStyle
+import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
+import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
+import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
 import java.time.LocalDate
@@ -37,6 +51,7 @@ fun GoalScreen(navController: NavController){
 
         if (UserClass.goal != null) {
             GoalInfo()
+            GoalChart()
         }
         else {
             IconButton(
@@ -63,4 +78,51 @@ private fun GoalInfo(){
     val goalDate = remember { mutableStateOf(UserClass.goal!!.targetDate.toString()) }
     LabeledRowWithText(label = "Сумма", textState = goalSum)
     LabeledRowWithText(label = "Дата", textState = goalDate)
+}
+
+@Composable
+private fun GoalChart(){
+    val pointsData: List<Point> =
+        listOf(Point(0f, 40f), Point(1f, 90f), Point(2f, 0f), Point(3f, 60f), Point(4f, 10f))
+
+    val xAxisData = AxisData.Builder()
+        .axisStepSize(100.dp)
+        .backgroundColor(Color.Blue)
+        .steps(pointsData.size - 1)
+        .labelData { i -> i.toString() }
+        .labelAndAxisLinePadding(15.dp)
+        .build()
+
+    val steps = 2
+    val yAxisData = AxisData.Builder()
+        .steps(steps)
+        .backgroundColor(Color.Red)
+        .labelAndAxisLinePadding(20.dp)
+        .labelData {index -> monthName(index + 1)}.build()
+
+    val lineChartData = LineChartData(
+        linePlotData = LinePlotData(
+            lines = listOf(
+                Line(
+                    dataPoints = pointsData,
+                    LineStyle(),
+                    IntersectionPoint(),
+                    SelectionHighlightPoint(),
+                    ShadowUnderLine(),
+                    SelectionHighlightPopUp()
+                )
+            ),
+        ),
+        xAxisData = xAxisData,
+        yAxisData = yAxisData,
+        gridLines = GridLines(),
+        backgroundColor = Color.White
+    )
+
+    LineChart(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        lineChartData = lineChartData
+    )
 }

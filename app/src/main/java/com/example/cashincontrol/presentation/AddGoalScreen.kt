@@ -101,7 +101,7 @@ fun AddGoalScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(3.dp)),
+                .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(3.dp)),
             shape = RoundedCornerShape(3.dp),
             contentPadding = PaddingValues(12.dp),
         ) {
@@ -219,6 +219,7 @@ fun LabeledRowWithText(label: String, textState: MutableState<String>) {
                 disabledTextColor = Color.Black
             ),
             modifier = Modifier
+                .fillMaxWidth()
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp)),
             enabled = false
         )
@@ -238,8 +239,10 @@ fun LabeledRowWithNumTextField(label: String, textState: MutableState<String>) {
                 focusedContainerColor = Color.Transparent,
                 focusedTextColor = Color.Black,
             ),
+
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
+                .fillMaxWidth()
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp))
         )
     }

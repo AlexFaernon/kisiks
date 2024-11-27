@@ -51,8 +51,6 @@ import kotlin.random.Random
 
 @Composable
 fun AnalyticsScreen() {
-    Inflation.updateInflation()
-    Inflation.updateCategoryInflation()
     if (UserClass.transactions.isEmpty()) {
         Text(
             modifier = Modifier.fillMaxSize().wrapContentHeight(),
@@ -66,7 +64,7 @@ fun AnalyticsScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp, top = 48.dp, end = 10.dp)
+                .padding(start = 10.dp, top = 30.dp, end = 10.dp)
                 .background(Color.White),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -88,7 +86,7 @@ fun AnalyticsScreen() {
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             MainBarChart(UserClass.transactions)
-            BottomCard("Достижение “Финансовый гений", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
+            BottomCard("Достижение \"Финансовый гений\"", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
             BottomCard("Подсказка", "Отличная идея - сохранять небольшую часть дохода (5%-10%) в пользу финансовой подушки безопасности.", R.drawable.icon_hint)
         }
     }
@@ -157,11 +155,14 @@ fun MainBarChart(transactions: List<Transaction>) {
         )
     }
 
+    val firstMonthWithData = barChartData.firstOrNull()?.label?.let { monthNameToNumber(it) } ?: 1
     val xAxisData = AxisData.Builder()
         .axisStepSize(20.dp)
-        .steps(months - 1)
+        .steps(barChartData.size - 1)
         .bottomPadding(20.dp)
-        .labelData { index -> monthName(index + 1) }
+        .labelData { index ->
+            monthName(firstMonthWithData + index)
+        }
         .build()
 
     val yAxisData = AxisData.Builder()
@@ -172,23 +173,28 @@ fun MainBarChart(transactions: List<Transaction>) {
             (index * (maxYValue / 5)).toInt().toString()
         }
         .build()
-
-    GroupBarChart(
-        modifier = Modifier
-            .height(250.dp)
-            .fillMaxWidth(),
-        groupBarChartData = GroupBarChartData(
-            barPlotData = BarPlotData(
-                groupBarList = scaledBarChartData,
-                barColorPaletteList = listOf(
-                    Color(0xFFFF9800),
-                    Color(0xFF9C27B0)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        GroupBarChart(
+            modifier = Modifier
+                .height(250.dp)
+                .fillMaxWidth(),
+            groupBarChartData = GroupBarChartData(
+                barPlotData = BarPlotData(
+                    groupBarList = scaledBarChartData,
+                    barColorPaletteList = listOf(
+                        Color(0xFFffbb73),
+                        Color(0xFFbb73ff)
+                    ),
                 ),
-            ),
-            xAxisData = xAxisData,
-            yAxisData = yAxisData
+                xAxisData = xAxisData,
+                yAxisData = yAxisData,
+                horizontalExtraSpace = 15.dp,
+                paddingEnd = 0.dp
+            )
         )
-    )
+
+        MainLegendItem()
+    }
 }
 
 fun adaptiveRoundUp(value: Float): Float {
@@ -203,7 +209,39 @@ fun roundUpToNearest(value: Float, nearest: Int): Float {
     return ((value + nearest - 1) / nearest).toInt() * nearest.toFloat()
 }
 
+@Composable
+fun MainLegendItem() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .background(Color(0xFFffbb73), shape = RoundedCornerShape(4.dp))
+        )
+        Text(
+            text = "Доходы",
+            fontSize = 16.sp,
+            modifier = Modifier.padding(start = 8.dp),
+            color = Color.Black
+        )
 
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .background(Color(0xFFbb73ff), shape = RoundedCornerShape(4.dp))
+        )
+        Text(
+            text = "Расходы",
+            fontSize = 16.sp,
+            modifier = Modifier.padding(start = 8.dp),
+            color = Color.Black
+        )
+    }
+}
 
 @Composable
 private fun ExpensesDonutChart() {
@@ -213,17 +251,16 @@ private fun ExpensesDonutChart() {
         labelColor = Color.Black,
         labelVisible = true,
         sliceLabelTextSize = 24.sp,
-        strokeWidth = 40f,
+        strokeWidth = 30f,
         activeSliceAlpha = .9f,
         isAnimationEnable = true
     )
-
     Row(
     ) {
         DonutPieChart(
             modifier = Modifier
-                .width(180.dp)
-                .height(180.dp),
+                .width(170.dp)
+                .height(170.dp),
             donutChartData,
             donutChartConfig
         )
@@ -290,11 +327,15 @@ fun createDonutChartData(): PieChartData {
     )
 }
 
-fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int): List<GroupBar> {
+fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int = 12): List<GroupBar> {
     val currentYear = LocalDate.now().year
     val filteredTransactions = transactions.filter { it.date.year == currentYear }
     val groupedTransactions = filteredTransactions.groupBy { it.date.monthValue }
-    return (1..months).map { month ->
+
+    // Определяем минимальный месяц с данными
+    val firstMonthWithData = groupedTransactions.keys.minOrNull() ?: 1
+
+    return (firstMonthWithData..months).map { month ->
         val income = groupedTransactions[month]?.filterIsInstance<IncomeTransaction>()?.map { it.sum }?.sum() ?: 0.0
         val expense = groupedTransactions[month]?.filterIsInstance<ExpensesTransaction>()?.map { it.sum }?.sum() ?: 0.0
 
@@ -316,9 +357,44 @@ fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int): List
     }
 }
 
-private fun monthName(month: Int): String {
+
+
+//fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int): List<GroupBar> {
+//    val currentYear = LocalDate.now().year
+//    val filteredTransactions = transactions.filter { it.date.year == currentYear }
+//    val groupedTransactions = filteredTransactions.groupBy { it.date.monthValue }
+//    return (1..months).map { month ->
+//        val income = groupedTransactions[month]?.filterIsInstance<IncomeTransaction>()?.map { it.sum }?.sum() ?: 0.0
+//        val expense = groupedTransactions[month]?.filterIsInstance<ExpensesTransaction>()?.map { it.sum }?.sum() ?: 0.0
+//
+//        GroupBar(
+//            label = monthName(month),
+//            barList = listOf(
+//                BarData(
+//                    point = Point(month.toFloat(), income.toFloat()),
+//                    color = Color(0xFFFF9800),
+//                    label = "Доходы"
+//                ),
+//                BarData(
+//                    point = Point(month.toFloat(), expense.toFloat()),
+//                    color = Color(0xFF9C27B0),
+//                    label = "Расходы"
+//                )
+//            )
+//        )
+//    }
+//}
+
+fun monthName(month: Int): String {
     val monthNames = listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")
     return monthNames[month - 1]
 }
 
+fun monthNameToNumber(monthName: String): Int {
+    val months = listOf(
+        "янв", "фев", "мар", "апр", "май", "июн",
+        "июл", "авг", "сен", "окт", "ноя", "дек"
+    )
+    return months.indexOf(monthName) + 1
+}
 

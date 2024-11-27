@@ -65,6 +65,7 @@ class Inflation {
             val previousPeriod = getCategoriesMeanForMonth(monthAgo)
 
             val result: MutableMap<ExpensesCategory, Float> = mutableMapOf()
+
             for (category in currentPeriod.keys){
                 if (!previousPeriod.containsKey(category)) continue
 

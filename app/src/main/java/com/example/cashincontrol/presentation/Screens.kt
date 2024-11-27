@@ -20,7 +20,7 @@ fun Analytic() {
 
 @Composable
 fun Purpose() {
-    PurposeScreen()
+    InflationScreen()
 }
 
 @Composable

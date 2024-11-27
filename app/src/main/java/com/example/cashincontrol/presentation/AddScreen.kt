@@ -105,7 +105,7 @@ fun AddScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, top = 48.dp, end = 10.dp),
+            .padding(start = 10.dp, top = 30.dp, end = 10.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TopSection(navController, transactionType, transactionCategory, transactionComment, moneyAmount)
@@ -141,7 +141,7 @@ fun AddScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(3.dp)),
+                .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(3.dp)),
             shape = RoundedCornerShape(3.dp),
             contentPadding = PaddingValues(12.dp),
         ) {
@@ -277,6 +277,7 @@ fun LabeledRowWithTextField(label: String, textState: MutableState<String>) {
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier
+                .fillMaxWidth()
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp))
         )
     }
@@ -290,7 +291,7 @@ fun TextWithPadding(text: String) {
         fontSize = 20.sp,
         fontWeight = FontWeight.Normal,
         modifier = Modifier
-            .padding(start = 22.dp, end = 28.dp, top = 3.dp, bottom = 3.dp)
+            .padding(start = 10.dp, end = 28.dp, top = 3.dp, bottom = 3.dp)
     )
 }
 
@@ -414,13 +415,19 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
         }
     }
     if (showDialog) {
-        AddCategoryDialog(onDismiss = { showDialog = false }, transactionType)
+        AddCategoryDialog(
+            onDismiss = { showDialog = false },
+            transactionType = transactionType,
+            onCategoryAdded = { newCategory ->
+                transactionCategory.value = newCategory
+            }
+        )
     }
 }
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String) {
+fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategoryAdded: (Category) -> Unit) {
     var newCategory = remember {
         mutableStateOf(if (transactionType == "Доход") IncomeCategory("") else ExpensesCategory(""))
     }
@@ -454,6 +461,7 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String) {
                         onClick = {
                             if (newCategory.value.name.isNotBlank()) {
                                 UserClass.categories.add(newCategory.value)
+                                onCategoryAdded(newCategory.value)
                                 onDismiss()
                             }
                         }

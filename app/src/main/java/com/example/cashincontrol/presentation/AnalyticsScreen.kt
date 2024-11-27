@@ -52,6 +52,7 @@ import kotlin.random.Random
 @Composable
 fun AnalyticsScreen() {
     Inflation.updateInflation()
+    Inflation.updateCategoryInflation()
     if (UserClass.transactions.isEmpty()) {
         Text(
             modifier = Modifier.fillMaxSize().wrapContentHeight(),

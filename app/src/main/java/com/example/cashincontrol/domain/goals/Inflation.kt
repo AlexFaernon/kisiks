@@ -68,7 +68,7 @@ class Inflation {
             for (category in currentPeriod.keys){
                 if (!previousPeriod.containsKey(category)) continue
 
-                result[category] = currentPeriod[category]!! / previousPeriod[category]!!
+                result[category] = (currentPeriod[category]!! / previousPeriod[category]!! - 1) * 100
             }
 
             CategoryInflation = result
@@ -79,9 +79,10 @@ class Inflation {
             val monthAgo = startDate.minusMonths(1)
 
             var startIndex = -1
-            for (i in 0..UserClass.transactions.size){
+            for (i in 0..<UserClass.transactions.size){
                 if (UserClass.transactions[i].date.toLocalDate() <= startDate){
                     startIndex = i
+                    break
                 }
             }
 
@@ -89,7 +90,7 @@ class Inflation {
                 return mapOf()
             }
 
-            for (i in startIndex..UserClass.transactions.size){
+            for (i in startIndex..<UserClass.transactions.size){
                 val transaction = UserClass.transactions[i]
                 if (transaction.date.toLocalDate() < monthAgo) break
 

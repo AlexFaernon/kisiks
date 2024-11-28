@@ -42,7 +42,6 @@ import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.goals.Inflation
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeTransaction
 import com.example.cashincontrol.domain.transaction.Transaction

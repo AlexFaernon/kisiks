@@ -1,78 +1,59 @@
 package com.example.cashincontrol.domain.goals
 
 import android.util.Log
-import com.example.cashincontrol.domain.UserClass
+import com.example.cashincontrol.domain.UserClass.Companion.transactions
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
-import com.example.cashincontrol.domain.transaction.IncomeTransaction
 import java.time.LocalDate
 import java.time.Month
 
 class Inflation {
     companion object{
-        val YearInflation: List<Pair<Int, Float>> = mutableListOf()
+        lateinit var YearInflation: Map<Month, Float>
         lateinit var CategoryInflation: Map<ExpensesCategory, Float>
 
         fun updateInflation(){
-            val transactions = UserClass.transactions
-            var startIndex = -1
-            val currentMonth = LocalDate.now().month
-            for (i in 0..transactions.size){
-                if (transactions[i].date.month != currentMonth){
-                    startIndex = i
-                    break
-                }
-            }
+            val lastYear = getYearlyMean(LocalDate.now())
+            val previousYear = getYearlyMean(LocalDate.now().minusYears(1))
 
-            if (startIndex == -1){
-                return
-            }
-
-            val meansByMonth: MutableList<Pair<Month, Float>> = mutableListOf()
-            var month = transactions[startIndex].date.month
-            var transactionCount = 0f
-            var transactionSum = 0f
-
-            for (transaction in transactions.subList(startIndex, transactions.size)){
-                if (transaction.date.month == currentMonth) break
-
-                if (transaction is IncomeTransaction) continue
-
-                if (transaction.date.month != month){
-                    val mean = transactionSum / transactionCount
-                    meansByMonth.add(Pair(month, mean))
-
-                    month = transaction.date.month
-                    transactionCount = 0f
-                    transactionSum = 0f
-                }
-
-                transactionCount++
-                transactionSum += transaction.sum
-            }
-
-            val mean = transactionSum / transactionCount
-            meansByMonth.add(Pair(month, mean))
-            for (i in meansByMonth){
-                Log.d("inflation", i.toString())
+            YearInflation = getInflation(lastYear, previousYear)
+            Log.d("inflation", "Yearly inflation")
+            for (i in YearInflation){
+                Log.d("inflation", "${i.key} ${i.value}")
             }
         }
 
-        fun updateCategoryInflation(){
-            val today = LocalDate.now()
-            val monthAgo = today.minusMonths(1)
-            val currentPeriod =  getCategoriesMeanForMonth(today)
-            val previousPeriod = getCategoriesMeanForMonth(monthAgo)
+        private fun getYearlyMean(startDate: LocalDate): Map<Month, Float>{
+            val startIndex = transactions.indexOfFirst { it.date.month != startDate.month && it.date.toLocalDate() <= startDate }
+            if (startIndex == -1) return mapOf()
 
-            val result: MutableMap<ExpensesCategory, Float> = mutableMapOf()
+            val endDate = transactions[startIndex].date.minusYears(1)
+            val pastEndIndex = transactions.indexOfFirst { it.date.year == endDate.year && it.date.month == endDate.month}
+            val endIndex = if (pastEndIndex == -1) transactions.size - 1 else pastEndIndex - 1
 
-            for (category in currentPeriod.keys){
-                if (!previousPeriod.containsKey(category)) continue
-
-                result[category] = (currentPeriod[category]!! / previousPeriod[category]!! - 1) * 100
+            val groupByMonth = transactions.slice(startIndex..endIndex).groupBy { it.date.month }
+            val meanByMonth: MutableMap<Month, Float> = mutableMapOf()
+            for (group in groupByMonth){
+                val expensesTransactions = group.value.filterIsInstance<ExpensesTransaction>()
+                if (expensesTransactions.isEmpty()) continue
+                meanByMonth[group.key] = (expensesTransactions.sumOf { it.sum.toDouble() } / expensesTransactions.size).toFloat()
             }
 
-            CategoryInflation = result
+            Log.d("inflation", "start from $startDate")
+            for (i in meanByMonth){
+                Log.d("inflation", "${i.key} ${i.value}")
+            }
+
+            return meanByMonth
+        }
+
+        fun updateCategoryInflation(){
+            val lastPeriod =  getCategoriesMeanForMonth(LocalDate.now())
+            val previousPeriod = getCategoriesMeanForMonth(LocalDate.now().minusMonths(1))
+
+            CategoryInflation = getInflation(lastPeriod, previousPeriod)
+
         }
 
         private fun getCategoriesMeanForMonth(startDate: LocalDate): Map<ExpensesCategory, Float>{
@@ -80,8 +61,8 @@ class Inflation {
             val monthAgo = startDate.minusMonths(1)
 
             var startIndex = -1
-            for (i in 0..<UserClass.transactions.size){
-                if (UserClass.transactions[i].date.toLocalDate() <= startDate){
+            for (i in 0..<transactions.size){
+                if (transactions[i].date.toLocalDate() <= startDate){
                     startIndex = i
                     break
                 }
@@ -91,8 +72,8 @@ class Inflation {
                 return mapOf()
             }
 
-            for (i in startIndex..<UserClass.transactions.size){
-                val transaction = UserClass.transactions[i]
+            for (i in startIndex..<transactions.size){
+                val transaction = transactions[i]
                 if (transaction.date.toLocalDate() < monthAgo) break
 
                 if (transaction.category is IncomeCategory) continue
@@ -110,7 +91,19 @@ class Inflation {
             val result: MutableMap<ExpensesCategory, Float> = mutableMapOf()
             for (keyValue in means){
                 val mean = keyValue.value.second / keyValue.value.first
-                result[keyValue.key] = mean;
+                result[keyValue.key] = mean
+            }
+
+            return result
+        }
+
+        private fun <T> getInflation(lastPeriod: Map<T, Float>, previousPeriod: Map<T, Float>): Map<T, Float>{
+            val result: MutableMap<T, Float> = mutableMapOf()
+
+            for (meanGroup in lastPeriod.keys){
+                if (!previousPeriod.containsKey(meanGroup)) continue
+
+                result[meanGroup] = (lastPeriod[meanGroup]!! / previousPeriod[meanGroup]!! - 1) * 100
             }
 
             return result

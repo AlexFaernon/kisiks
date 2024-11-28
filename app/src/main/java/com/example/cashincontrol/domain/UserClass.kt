@@ -55,7 +55,8 @@ class UserClass {
                 return
             }
 
-            transactions.add(-insertIndex - 1, newTransaction)
+            val index = if (insertIndex==0) 0 else -insertIndex - 1
+            transactions.add(index, newTransaction)
             currentMoney += if (isExpenses) -sum else sum
         }
 

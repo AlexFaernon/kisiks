@@ -106,7 +106,7 @@ fun AddGoalScreen(navController: NavController) {
             contentPadding = PaddingValues(12.dp),
         ) {
             Text(
-                text = "Рассчитать",
+                text = "Рассчитать и сохранить",
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Normal

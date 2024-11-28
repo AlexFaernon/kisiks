@@ -101,6 +101,9 @@ fun AddScreen(navController: NavController) {
     val transactionComment = remember { mutableStateOf("") }
     val isRegular = remember { mutableStateOf(true) }
     val moneyAmount = remember { mutableStateOf("") }
+    val isSaveEnabled = remember(moneyAmount.value) {
+        moneyAmount.value.toFloatOrNull()?.let { it > 0 } ?: false
+    }
 
     Column(
         modifier = Modifier
@@ -118,6 +121,8 @@ fun AddScreen(navController: NavController) {
             moneyAmount,
             transactionType.value
         )
+
+
 
         Button(
             onClick = {
@@ -144,6 +149,7 @@ fun AddScreen(navController: NavController) {
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(3.dp)),
             shape = RoundedCornerShape(3.dp),
             contentPadding = PaddingValues(12.dp),
+            enabled = isSaveEnabled
         ) {
             Text(
                 text = "Сохранить",

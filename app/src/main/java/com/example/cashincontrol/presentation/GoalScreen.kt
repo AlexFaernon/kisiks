@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.yml.charts.axis.AxisData
@@ -80,25 +81,27 @@ private fun GoalInfo(){
     LabeledRowWithText(label = "Дата", textState = goalDate)
 }
 
+@Preview
 @Composable
 private fun GoalChart(){
     val pointsData: List<Point> =
-        listOf(Point(0f, 40f), Point(1f, 90f), Point(2f, 0f), Point(3f, 60f), Point(4f, 10f))
+        listOf(Point(1f, 5f), Point(2f, 2f), Point(3f, 3f), Point(4f, 4f), Point(5f, 11f), Point(6f, 11f), Point(7f, 11f), Point(8f, 11f), Point(9f, 11f), Point(10f, 11f), Point(11f, 11f), Point(12f, 11f))
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
-        .backgroundColor(Color.Blue)
         .steps(pointsData.size - 1)
-        .labelData { i -> i.toString() }
+        .labelData {index -> monthName(index + 1)}
         .labelAndAxisLinePadding(15.dp)
+        .shouldDrawAxisLineTillEnd(true)
         .build()
 
-    val steps = 2
     val yAxisData = AxisData.Builder()
-        .steps(steps)
-        .backgroundColor(Color.Red)
-        .labelAndAxisLinePadding(20.dp)
-        .labelData {index -> monthName(index + 1)}.build()
+        .steps(5)
+        .labelAndAxisLinePadding(10.dp)
+        .axisOffset(50.dp)
+        .labelData { i -> i.toString() }
+        .build()
+
 
     val lineChartData = LineChartData(
         linePlotData = LinePlotData(

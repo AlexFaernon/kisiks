@@ -83,14 +83,27 @@ private fun GoalInfo(){
 
 @Preview
 @Composable
-private fun GoalChart(){
+private fun GoalChart() {
     val pointsData: List<Point> =
-        listOf(Point(1f, 5f), Point(2f, 2f), Point(3f, 3f), Point(4f, 4f), Point(5f, 11f), Point(6f, 11f), Point(7f, 11f), Point(8f, 11f), Point(9f, 11f), Point(10f, 11f), Point(11f, 11f), Point(12f, 11f))
+        listOf(
+            Point(1.0f, 1.0f),
+            Point(2.0f, 1.4f),
+            Point(3.0f, 1.8f),
+            Point(4.0f, 2.2f),
+            Point(5.0f, 2.6f),
+            Point(6.0f, 3.0f),
+            Point(7.0f, 3.4f),
+            Point(8.0f, 3.8f),
+            Point(9.0f, 4.2f),
+            Point(10.0f, 4.6f),
+            Point(11.0f, 5.0f),
+            Point(12.0f, 5.0f)
+        )
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
         .steps(pointsData.size - 1)
-        .labelData {index -> monthName(index + 1)}
+        .labelData { index -> monthName(index + 1) }
         .labelAndAxisLinePadding(15.dp)
         .shouldDrawAxisLineTillEnd(true)
         .build()
@@ -108,10 +121,16 @@ private fun GoalChart(){
             lines = listOf(
                 Line(
                     dataPoints = pointsData,
-                    LineStyle(),
-                    IntersectionPoint(),
+                    LineStyle(
+                        color = Color(0xFFffbb73),
+                        ),
+                    IntersectionPoint(
+                        color = Color(0xFFffbb73),
+                    ),
                     SelectionHighlightPoint(),
-                    ShadowUnderLine(),
+                    ShadowUnderLine(
+                        color = Color(0xFFffbb73),
+                    ),
                     SelectionHighlightPopUp()
                 )
             ),

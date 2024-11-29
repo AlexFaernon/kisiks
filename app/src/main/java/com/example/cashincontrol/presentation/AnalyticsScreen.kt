@@ -204,9 +204,22 @@ fun adaptiveRoundUp(value: Float): Float {
     }
 }
 
+fun adaptiveRoundDown(value: Float): Float {
+    return when {
+        value >= -100 -> roundDownToNearest(value, 10)
+        value >= -1000 -> roundDownToNearest(value, 100)
+        else -> roundDownToNearest(value, 1000)
+    }
+}
+
 fun roundUpToNearest(value: Float, nearest: Int): Float {
     return ((value + nearest - 1) / nearest).toInt() * nearest.toFloat()
 }
+
+fun roundDownToNearest(value: Float, nearest: Int): Float {
+    return ((value - nearest + 1) / nearest).toInt() * nearest.toFloat()
+}
+
 
 @Composable
 fun MainLegendItem() {

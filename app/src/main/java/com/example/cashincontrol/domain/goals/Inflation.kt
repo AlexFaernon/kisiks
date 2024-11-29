@@ -10,6 +10,7 @@ import java.time.Month
 
 class Inflation {
     companion object{
+        var GlobalInflation = 0f
         lateinit var YearInflation: Map<Month, Float>
         lateinit var CategoryInflation: Map<ExpensesCategory, Float>
 
@@ -18,6 +19,7 @@ class Inflation {
             val previousYear = getYearlyMean(LocalDate.now().minusYears(1))
 
             YearInflation = getInflation(lastYear, previousYear)
+            GlobalInflation = YearInflation.values.average().toFloat()
             Log.d("inflation", "Yearly inflation")
             for (i in YearInflation){
                 Log.d("inflation", "${i.key} ${i.value}")

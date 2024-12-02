@@ -222,7 +222,7 @@ fun roundDownToNearest(value: Float, nearest: Int): Float {
 
 
 @Composable
-fun MainLegendItem() {
+private fun MainLegendItem() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -344,7 +344,6 @@ fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int = 12):
     val filteredTransactions = transactions.filter { it.date.year == currentYear }
     val groupedTransactions = filteredTransactions.groupBy { it.date.monthValue }
 
-    // Определяем минимальный месяц с данными
     val firstMonthWithData = groupedTransactions.keys.minOrNull() ?: 1
 
     return (firstMonthWithData..months).map { month ->
@@ -368,34 +367,6 @@ fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int = 12):
         )
     }
 }
-
-
-
-//fun prepareGroupBarChartData(transactions: List<Transaction>, months: Int): List<GroupBar> {
-//    val currentYear = LocalDate.now().year
-//    val filteredTransactions = transactions.filter { it.date.year == currentYear }
-//    val groupedTransactions = filteredTransactions.groupBy { it.date.monthValue }
-//    return (1..months).map { month ->
-//        val income = groupedTransactions[month]?.filterIsInstance<IncomeTransaction>()?.map { it.sum }?.sum() ?: 0.0
-//        val expense = groupedTransactions[month]?.filterIsInstance<ExpensesTransaction>()?.map { it.sum }?.sum() ?: 0.0
-//
-//        GroupBar(
-//            label = monthName(month),
-//            barList = listOf(
-//                BarData(
-//                    point = Point(month.toFloat(), income.toFloat()),
-//                    color = Color(0xFFFF9800),
-//                    label = "Доходы"
-//                ),
-//                BarData(
-//                    point = Point(month.toFloat(), expense.toFloat()),
-//                    color = Color(0xFF9C27B0),
-//                    label = "Расходы"
-//                )
-//            )
-//        )
-//    }
-//}
 
 fun monthName(month: Int): String {
     val monthNames = listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")

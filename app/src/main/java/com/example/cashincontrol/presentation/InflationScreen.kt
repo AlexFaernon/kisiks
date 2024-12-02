@@ -3,6 +3,7 @@ package com.example.cashincontrol.presentation
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -149,7 +150,6 @@ fun CategoryInflation(){
     Inflation.updateCategoryInflation()
     val inflation = Inflation.CategoryInflation
     Log.d("ИНФЛЯЦИЯ", "DataForm: ${inflation.entries.size}")
-//    val block = listOf(99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f, 99.99f, 13f, 0.01f )
     Text(
         text = "Категории",
         fontSize = 20.sp,
@@ -238,11 +238,10 @@ private fun InflationChart() {
 
     val yAxisData = AxisData.Builder()
         .steps(5)
-        .labelAndAxisLinePadding(10.dp)
-        .axisOffset(50.dp)
+        .axisOffset(10.dp)
         .labelData { i ->
              val value = minY + step * i
-             String.format("%.1f %%", value)}
+             "${value.toInt()} %"}
         .build()
 
 //    val gridLines = GridLines(
@@ -286,13 +285,60 @@ private fun InflationChart() {
         backgroundColor = Color.White
     )
 
-    LineChart(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        lineChartData = lineChartData
-    )
+    Column(horizontalAlignment = Alignment.Start) {
+        LineChart(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            lineChartData = lineChartData
+        )
+        InflationLegendItem()
+    }
 }
+
+@Composable
+private fun InflationLegendItem() {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.padding(start = 16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .background(Color(0xFFbb73ff), shape = RoundedCornerShape(4.dp))
+            )
+            Text(
+                text = "Личная инфляция",
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 8.dp),
+                color = Color.Black
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .background(Color(0xFFffbb73), shape = RoundedCornerShape(4.dp))
+            )
+            Text(
+                text = "Инфляция (по данным Росстата)",
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 8.dp),
+                color = Color.Black
+            )
+        }
+    }
+}
+
 
 private fun getOrderedMonths(startMonth: Int) : List<String>{
     val monthNames = listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")

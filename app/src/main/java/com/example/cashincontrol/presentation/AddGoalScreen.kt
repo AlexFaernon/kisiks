@@ -68,7 +68,7 @@ fun AddGoalScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, top = 48.dp, end = 10.dp),
+            .padding(start = 10.dp, top = 30.dp, end = 10.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TopSection(navController)
@@ -104,6 +104,7 @@ fun AddGoalScreen(navController: NavController) {
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(3.dp)),
             shape = RoundedCornerShape(3.dp),
             contentPadding = PaddingValues(12.dp),
+            enabled = isButtonEnabled(goalDate.value, goalSum.value)
         ) {
             Text(
                 text = "Рассчитать и сохранить",
@@ -112,6 +113,7 @@ fun AddGoalScreen(navController: NavController) {
                 fontWeight = FontWeight.Normal
             )
         }
+
     }
 }
 
@@ -246,4 +248,12 @@ fun LabeledRowWithNumTextField(label: String, textState: MutableState<String>) {
                 .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp))
         )
     }
+}
+
+fun isButtonEnabled(goalDate: LocalDate, goalSum: String): Boolean {
+    val today = LocalDate.now()
+    val isDateValid = goalDate.isAfter(today.plusMonths(2))
+    val isSumValid = goalSum.toFloatOrNull() != null && goalSum.toFloat() > 0
+
+    return isDateValid && isSumValid
 }

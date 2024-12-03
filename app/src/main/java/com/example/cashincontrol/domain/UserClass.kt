@@ -1,5 +1,6 @@
 package com.example.cashincontrol.domain
 
+import com.example.cashincontrol.domain.database.DbHandler
 import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
@@ -12,10 +13,18 @@ import java.time.LocalDateTime
 class UserClass {
     companion object {
         val transactions: MutableList<Transaction> = mutableListOf()
-        val categories: MutableList<Category> =
-            mutableListOf(ExpensesCategory("Продукты"), IncomeCategory("Зарплата"))
+        val categories: MutableList<Category> = setupCategories()
         public var goal: Goal? = null
         var currentMoney: Float = 1000F
+
+        private fun setupCategories(): MutableList<Category>{
+            val result = DbHandler.getCategories()
+            if (result.isEmpty()){
+                return mutableListOf(ExpensesCategory("Продукты"), IncomeCategory("Зарплата"))
+            }
+
+            return result
+        }
 
         public fun getExpensesCategory(): List<ExpensesCategory> {
             val result: MutableList<ExpensesCategory> = mutableListOf()
@@ -75,6 +84,7 @@ class UserClass {
             category?: run {
                 newCategory = if (isExpenses) { ExpensesCategory(categoryName) } else { IncomeCategory(categoryName) }
                 categories.add(newCategory)
+                DbHandler.addCategory(newCategory)
                 return newCategory
             }
             throw IllegalArgumentException("Category already exists")

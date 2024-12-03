@@ -3,7 +3,7 @@ package com.example.cashincontrol
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatDelegate
+import com.example.cashincontrol.domain.database.DbHandler
 import com.example.cashincontrol.presentation.Start
 import com.example.cashincontrol.ui.theme.CashInControlTheme
 
@@ -13,7 +13,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             CashInControlTheme {
                 Start()
+                DbHandler.setupDatabase(this)
             }
         }
+    }
+
+    override fun onDestroy() {
+        DbHandler.closeDatabase()
+        super.onDestroy()
     }
 }

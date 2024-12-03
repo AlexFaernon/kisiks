@@ -13,17 +13,18 @@ import java.time.LocalDateTime
 class UserClass {
     companion object {
         val transactions: MutableList<Transaction> = mutableListOf()
-        val categories: MutableList<Category> = setupCategories()
-        public var goal: Goal? = null
+        private var categories: MutableList<Category> = mutableListOf()
+        var goal: Goal? = null
         var currentMoney: Float = 1000F
 
-        private fun setupCategories(): MutableList<Category>{
+        fun setupCategories(){
             val result = DbHandler.getCategories()
-            if (result.isEmpty()){
-                return mutableListOf(ExpensesCategory("Продукты"), IncomeCategory("Зарплата"))
+            if (result.isEmpty()) {
+                createCategory("Продукты", true)
+                createCategory("Зарплата", false)
+            } else {
+                categories = result
             }
-
-            return result
         }
 
         public fun getExpensesCategory(): List<ExpensesCategory> {
@@ -36,7 +37,7 @@ class UserClass {
             return result
         }
 
-        public fun GetIncomeCategory(): List<IncomeCategory> {
+        public fun getIncomeCategory(): List<IncomeCategory> {
             val result: MutableList<IncomeCategory> = mutableListOf()
             for (category in categories) {
                 if (category is IncomeCategory) {
@@ -46,7 +47,7 @@ class UserClass {
             return result
         }
 
-        public fun addTransaction(
+        fun addTransaction(
             isExpenses: Boolean,
             sum: Float,
             date: LocalDateTime,
@@ -69,7 +70,7 @@ class UserClass {
             currentMoney += if (isExpenses) -sum else sum
         }
 
-        public fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
+        fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
             val category = checkCategory(categoryName, isExpenses)
             category?.let {
                 return category
@@ -78,7 +79,7 @@ class UserClass {
             return createCategory(categoryName, isExpenses)
         }
 
-        public fun createCategory(categoryName: String, isExpenses: Boolean): Category{
+        fun createCategory(categoryName: String, isExpenses: Boolean): Category{
             val category = checkCategory(categoryName, isExpenses)
             var newCategory: Category
             category?: run {

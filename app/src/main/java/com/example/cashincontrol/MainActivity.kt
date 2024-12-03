@@ -3,6 +3,7 @@ package com.example.cashincontrol
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.database.DbHandler
 import com.example.cashincontrol.presentation.Start
 import com.example.cashincontrol.ui.theme.CashInControlTheme
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
             CashInControlTheme {
                 Start()
                 DbHandler.setupDatabase(this)
+                UserClass.setupCategories()
             }
         }
     }

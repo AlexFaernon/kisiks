@@ -3,6 +3,7 @@ package com.example.cashincontrol.domain.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -27,7 +28,7 @@ class DbHandler {
                 put(CategoryTable.IS_EXPENSES, if (category is ExpensesCategory) 1 else 0)
             }
 
-            categoryDb.insert(CategoryTable.TABLE_NAME, null, values)
+            Log.d("category db", categoryDb.insert(CategoryTable.TABLE_NAME, null, values).toString())
         }
 
         fun getCategories(): MutableList<Category>{

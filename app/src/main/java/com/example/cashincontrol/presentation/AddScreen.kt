@@ -95,7 +95,7 @@ data class DataForm(
 @Composable
 fun AddScreen(navController: NavController) {
     val transactionType = remember { mutableStateOf("Доход") }
-    val transactionCategory = remember { mutableStateOf(UserClass.GetIncomeCategory().first() as Category) }
+    val transactionCategory = remember { mutableStateOf(UserClass.getIncomeCategory().first() as Category) }
 //    val transactionKind = remember { mutableStateOf("") }
     val transactionDate = remember { mutableStateOf(LocalDate.now()) }
     val transactionComment = remember { mutableStateOf("") }
@@ -369,7 +369,7 @@ fun resetFormFields(
     moneyAmount: MutableState<String>,
     isExpenses: Boolean
 ) {
-    transactionCategory.value = if (isExpenses) UserClass.getExpensesCategory().first() else UserClass.GetIncomeCategory().first()
+    transactionCategory.value = if (isExpenses) UserClass.getExpensesCategory().first() else UserClass.getIncomeCategory().first()
     transactionComment.value = ""
     moneyAmount.value = ""
 }
@@ -378,7 +378,7 @@ fun resetFormFields(
 fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactionType: String) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    var categoryList = if (transactionType == "Доход") UserClass.GetIncomeCategory() else UserClass.getExpensesCategory()
+    var categoryList = if (transactionType == "Доход") UserClass.getIncomeCategory() else UserClass.getExpensesCategory()
 
     Box(
         modifier = Modifier
@@ -466,7 +466,7 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategor
                     TextButton(
                         onClick = {
                             if (newCategory.value.name.isNotBlank()) {
-                                UserClass.categories.add(newCategory.value)
+                                UserClass.createCategory(newCategory.value.name, newCategory.value is ExpensesCategory)
                                 onCategoryAdded(newCategory.value)
                                 onDismiss()
                             }

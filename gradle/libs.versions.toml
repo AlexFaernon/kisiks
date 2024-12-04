@@ -12,11 +12,13 @@ composeBom = "2024.04.01"
 navigationRuntimeKtx = "2.8.3"
 appcompat = "1.7.0"
 roomKtx = "2.6.1"
+uiTextGoogleFonts = "1.7.5"
 ycharts = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose" }
+androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 itext7-core = { module = "com.itextpdf:itext7-core", version = "8.0.5" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

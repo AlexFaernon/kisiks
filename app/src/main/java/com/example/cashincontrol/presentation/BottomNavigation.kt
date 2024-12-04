@@ -19,7 +19,7 @@ fun BottomNavigation(
         BottomItem.ScreenMain,
         BottomItem.ScreenAnalytics,
         BottomItem.ScreenGoal,
-        BottomItem.ScreenPurpose,
+        BottomItem.ScreenInflation,
         BottomItem.ScreenSettings
     )
     NavigationBar (

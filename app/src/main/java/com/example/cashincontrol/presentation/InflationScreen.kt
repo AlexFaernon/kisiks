@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
@@ -48,32 +49,49 @@ import com.example.cashincontrol.domain.goals.Inflation
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import java.time.Month
 
-@Preview
 @Composable
-fun InflationScreen() {
-    if (UserClass.transactions.isEmpty()) {
-        Text(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentHeight(),
-            text = "Нет данных",
-            fontSize = 32.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
+fun InflationScreen(
+    navController: NavController,
+    isBottomBarVisible: (Boolean) -> Unit
+) {
+    if (!UserClass.isOnboardingCompleted) {
+        isBottomBarVisible(false)
+
+        OnboardingScreens(
+            navController = navController,
+            onComplete = {
+                UserClass.isOnboardingCompleted = true
+                isBottomBarVisible(true)
+                navController.navigate("inflation") {
+                    popUpTo("inflation") { inclusive = true }
+                }
+            }
         )
-    }
-    else {
-        Inflation.updateInflation()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 10.dp, top = 30.dp, end = 10.dp)
-                .background(Color.White),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            MainInflation()
-            DynamicInflation()
-            CategoryInflation()
+    } else {
+        isBottomBarVisible(true)
+        if (UserClass.transactions.isEmpty()) {
+            Text(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentHeight(),
+                text = "Нет данных",
+                fontSize = 32.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+        } else {
+            Inflation.updateInflation()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 10.dp, top = 30.dp, end = 10.dp)
+                    .background(Color.White),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                MainInflation()
+                DynamicInflation()
+                CategoryInflation()
+            }
         }
     }
 }

@@ -19,8 +19,8 @@ fun Analytic() {
 }
 
 @Composable
-fun Purpose() {
-    InflationScreen()
+fun Inflation(navController: NavController, isBottomBarVisible: (Boolean) -> Unit) {
+    InflationScreen(navController,isBottomBarVisible)
 }
 
 @Composable

@@ -38,7 +38,6 @@ import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
 
-
 @Composable
 fun MainScreen(navController: NavController){
     Box(

@@ -4,20 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.cashincontrol.domain.UserClass
 
 @Composable
 fun NavGraph(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    isBottomBarVisible: (Boolean) -> Unit
 ) {
-    NavHost(navHostController, startDestination = "main") {
+    NavHost(navController = navHostController, startDestination = "main") {
         composable("main") {
             Main(navHostController)
         }
         composable("analytics") {
             Analytic()
         }
-        composable("purpose") {
-            Purpose()
+        composable("inflation") {
+            Inflation(navController = navHostController, isBottomBarVisible = isBottomBarVisible)
         }
         composable("goal") {
             Goal(navHostController)
@@ -30,6 +32,17 @@ fun NavGraph(
         }
         composable("addGoal") {
             AddGoalScreen(navHostController)
+        }
+        composable("onboarding") {
+            OnboardingScreens(
+                navController = navHostController,
+                onComplete = {
+                    UserClass.isOnboardingCompleted = true
+                    navHostController.navigate("inflation") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

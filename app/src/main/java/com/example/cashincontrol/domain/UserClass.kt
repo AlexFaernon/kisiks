@@ -16,6 +16,7 @@ class UserClass {
         private var categories: MutableList<Category> = mutableListOf()
         var goal: Goal? = null
         var currentMoney: Float = 1000F
+        var isOnboardingCompleted: Boolean = false
 
         fun setupCategories(){
             val result = DbHandler.getCategories()

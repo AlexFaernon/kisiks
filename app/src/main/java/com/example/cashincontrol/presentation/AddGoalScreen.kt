@@ -30,15 +30,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -230,10 +234,22 @@ fun LabeledRowWithText(label: String, textState: MutableState<String>) {
 
 @Composable
 fun LabeledRowWithNumTextField(label: String, textState: MutableState<String>) {
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(formatMoney(textState.value)))
+    }
     LabeledRow(label = label) {
         OutlinedTextField(
-            value = textState.value,
-            onValueChange = { textState.value = it },
+            value = textFieldValue,
+            onValueChange = { newValue ->
+                val unformattedText = newValue.text.replace(" ", "")
+                val formattedText = formatMoney(unformattedText)
+                val cursorPosition = formattedText.length - (unformattedText.length - newValue.selection.start)
+                textFieldValue = TextFieldValue(
+                    text = formattedText,
+                    selection = TextRange(cursorPosition.coerceAtLeast(0))
+                )
+                textState.value = unformattedText
+            },
             textStyle = TextStyle(fontSize = 20.sp),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,

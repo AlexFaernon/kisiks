@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -81,6 +82,9 @@ fun MainScreen(navController: NavController){
 
 @Composable
 private fun TopSection() {
+    val daysCount = remember { UserClass.getDaysSinceStart() }
+    val dayWord = getDayWord(daysCount)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,7 +104,7 @@ private fun TopSection() {
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "3 дня Вы ведёте бюджет!",
+                text = "$daysCount $dayWord Вы ведёте бюджет!",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -121,7 +125,7 @@ private fun TopSection() {
             )
 
             Text(
-                text = "500 ₽",
+                text = "${UserClass.currentMoney} ₽",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -233,5 +237,17 @@ private fun TransactionListScreen(transactions: List<Transaction>) {
             index, item ->
             TransactionCard(item)
         }
+    }
+}
+
+private fun getDayWord(days: Long): String {
+    val lastTwoDigits = (days % 100).toInt()
+    val lastDigit = (days % 10).toInt()
+
+    return when {
+        lastTwoDigits in 11..19 -> "дней"
+        lastDigit == 1 -> "день"
+        lastDigit in 2..4 -> "дня"
+        else -> "дней"
     }
 }

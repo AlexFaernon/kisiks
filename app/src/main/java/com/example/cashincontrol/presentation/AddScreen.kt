@@ -58,9 +58,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +75,8 @@ import com.example.cashincontrol.domain.bankParcing.BankParser
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -515,9 +519,22 @@ fun FileUploadButton(navController: NavController) {
 
 @Composable
 fun MoneyInputField(moneyAmount: MutableState<String>) {
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(formatMoney(moneyAmount.value)))
+    }
+
     OutlinedTextField(
-        value = moneyAmount.value,
-        onValueChange = { moneyAmount.value = it },
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            val unformattedText = newValue.text.replace(" ", "")
+            val formattedText = formatMoney(unformattedText)
+            val cursorPosition = formattedText.length - (unformattedText.length - newValue.selection.start)
+            textFieldValue = TextFieldValue(
+                text = formattedText,
+                selection = TextRange(cursorPosition.coerceAtLeast(0))
+            )
+            moneyAmount.value = unformattedText
+        },
         textStyle = TextStyle(fontSize = 48.sp),
         trailingIcon = {
             Text(
@@ -595,6 +612,17 @@ fun DatePickerDocked(transactionDate: MutableState<LocalDate>) {
             }
         }
     }
+}
+
+fun formatMoney(input: String): String {
+    val unformattedInput = input.replace(" ", "")
+    if (unformattedInput.isEmpty() || unformattedInput.any { !it.isDigit() }) {
+        return ""
+    }
+    return unformattedInput.reversed()
+        .chunked(3)
+        .joinToString(" ")
+        .reversed()
 }
 
 

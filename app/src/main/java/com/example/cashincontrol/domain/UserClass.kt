@@ -8,7 +8,9 @@ import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
 import com.example.cashincontrol.domain.transaction.IncomeTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class UserClass {
     companion object {
@@ -17,6 +19,7 @@ class UserClass {
         var goal: Goal? = null
         var currentMoney: Float = 1000F
         var isOnboardingCompleted: Boolean = false
+        var startDate: LocalDate? = LocalDate.now()
 
         fun setupCategories(){
             val result = DbHandler.getCategories()
@@ -100,6 +103,10 @@ class UserClass {
         fun getExpensesTransactions(): List<Transaction>
         {
             return transactions.filterIsInstance<ExpensesTransaction>()
+        }
+
+        fun getDaysSinceStart(): Long {
+            return ChronoUnit.DAYS.between(startDate, LocalDate.now()) + 1
         }
     }
 }

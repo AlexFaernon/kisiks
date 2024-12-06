@@ -4,21 +4,25 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
+import com.example.cashincontrol.domain.transaction.IncomeTransaction
+import com.example.cashincontrol.domain.transaction.Transaction
+import java.time.LocalDateTime
 
 class DbHandler {
     companion object{
-        private lateinit var categoryDb: SQLiteDatabase
-        private lateinit var transactionsDb: SQLiteDatabase
+        private lateinit var db: SQLiteDatabase
 
         fun setupDatabase(context: Context){
-            categoryDb = DbHelper(context).writableDatabase
+            db = DbHelper(context).writableDatabase
         }
 
         fun closeDatabase(){
-            categoryDb.close()
+            db.close()
         }
 
         fun addCategory(category: Category){
@@ -28,19 +32,24 @@ class DbHandler {
                 put(CategoryTable.IS_EXPENSES, if (category is ExpensesCategory) 1 else 0)
             }
 
-            Log.d("category db", categoryDb.insert(CategoryTable.TABLE_NAME, null, values).toString())
+            Log.d("category db", db.insert(CategoryTable.TABLE_NAME, null, values).toString())
+        }
+
+        fun addTransaction(transaction: Transaction){
+            val values = ContentValues().apply {
+                put(TransactionTable.SUM, transaction.sum)
+                put(TransactionTable.DATE, transaction.date.toString())
+                put(TransactionTable.COMMENTARY, transaction.commentary)
+                put(TransactionTable.CATEGORY, transaction.category.name)
+                put(TransactionTable.IS_EXPENSES, if (transaction is ExpensesTransaction) 1 else 0)
+            }
+
+            Log.d("Transaction db", db.insert(TransactionTable.TABLE_NAME, null, values).toString())
         }
 
         fun getCategories(): MutableList<Category>{
-            val cursor = categoryDb.query(
-                CategoryTable.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            )
+            val cursor = db.query(
+                CategoryTable.TABLE_NAME, null, null, null, null, null, null)
 
             val result: MutableList<Category> = mutableListOf()
             with(cursor){
@@ -53,6 +62,32 @@ class DbHandler {
                     }
                     else{
                         result.add(IncomeCategory(name, icon))
+                    }
+                }
+            }
+
+            cursor.close()
+            return result
+        }
+
+        fun getTransactions(): MutableList<Transaction>{
+            val cursor = db.query(
+                TransactionTable.TABLE_NAME, null, null, null, null, null, null)
+
+            val result: MutableList<Transaction> = mutableListOf()
+            with(cursor){
+                while (moveToNext()){
+                    val sum = getFloat(getColumnIndexOrThrow(TransactionTable.SUM))
+                    val date = LocalDateTime.parse(getString(getColumnIndexOrThrow(TransactionTable.DATE)))
+                    val comment = getString(getColumnIndexOrThrow(TransactionTable.COMMENTARY))
+                    val categoryStr = getString(getColumnIndexOrThrow(TransactionTable.CATEGORY))
+                    val isExpenses = getInt(getColumnIndexOrThrow(TransactionTable.IS_EXPENSES))
+                    val category = UserClass.getOrCreateCategory(categoryStr, isExpenses == 1)
+                    if (isExpenses == 1){
+                        result.add(ExpensesTransaction(sum, date, category as ExpensesCategory, comment))
+                    }
+                    else{
+                        result.add(IncomeTransaction(sum, date, category as IncomeCategory, comment))
                     }
                 }
             }

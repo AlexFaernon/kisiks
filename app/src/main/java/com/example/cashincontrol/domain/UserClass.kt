@@ -14,14 +14,14 @@ import java.time.temporal.ChronoUnit
 
 class UserClass {
     companion object {
-        val transactions: MutableList<Transaction> = mutableListOf()
+        var transactions: MutableList<Transaction> = mutableListOf()
         private var categories: MutableList<Category> = mutableListOf()
         var goal: Goal? = null
         var currentMoney: Float = 1000F
         var isOnboardingCompleted: Boolean = false
         var startDate: LocalDate? = LocalDate.now()
 
-        fun setupCategories(){
+        fun setupUserData(){
             val result = DbHandler.getCategories()
             if (result.isEmpty()) {
                 createCategory("Продукты", true)
@@ -29,9 +29,11 @@ class UserClass {
             } else {
                 categories = result
             }
+
+            transactions = DbHandler.getTransactions()
         }
 
-        public fun getExpensesCategory(): List<ExpensesCategory> {
+        fun getExpensesCategory(): List<ExpensesCategory> {
             val result: MutableList<ExpensesCategory> = mutableListOf()
             for (category in categories) {
                 if (category is ExpensesCategory) {
@@ -41,7 +43,7 @@ class UserClass {
             return result
         }
 
-        public fun getIncomeCategory(): List<IncomeCategory> {
+        fun getIncomeCategory(): List<IncomeCategory> {
             val result: MutableList<IncomeCategory> = mutableListOf()
             for (category in categories) {
                 if (category is IncomeCategory) {
@@ -71,6 +73,7 @@ class UserClass {
 
             val index = if (insertIndex==0) 0 else -insertIndex - 1
             transactions.add(index, newTransaction)
+            DbHandler.addTransaction(newTransaction)
             currentMoney += if (isExpenses) -sum else sum
         }
 
@@ -95,7 +98,7 @@ class UserClass {
             throw IllegalArgumentException("Category already exists")
         }
 
-        fun checkCategory(categoryName: String, isExpenses: Boolean): Category?{
+        private fun checkCategory(categoryName: String, isExpenses: Boolean): Category?{
             val targetType = if (isExpenses) ExpensesCategory::class.simpleName else IncomeCategory::class.simpleName
             return categories.firstOrNull { it.name == categoryName && it::class.simpleName == targetType}
         }

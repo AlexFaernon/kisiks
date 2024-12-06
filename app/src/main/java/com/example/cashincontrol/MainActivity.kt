@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
             CashInControlTheme {
                 Start()
                 DbHandler.setupDatabase(this)
-                UserClass.setupCategories()
+                UserClass.setupUserData()
             }
         }
     }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "1.4.21"
 }
 
 android {
@@ -72,4 +73,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation (libs.itext7.core)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.datastore)
 }

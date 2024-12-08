@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.database
+package com.example.cashincontrol.domain.saving.database
 
 import android.content.ContentValues
 import android.content.Context

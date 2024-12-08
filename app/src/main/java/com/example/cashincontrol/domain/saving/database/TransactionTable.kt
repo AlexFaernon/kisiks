@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.database
+package com.example.cashincontrol.domain.saving.database
 
 class TransactionTable{
     companion object{

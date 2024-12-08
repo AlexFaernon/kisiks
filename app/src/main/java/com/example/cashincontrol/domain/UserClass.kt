@@ -1,7 +1,11 @@
 package com.example.cashincontrol.domain
 
-import com.example.cashincontrol.domain.database.DbHandler
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.example.cashincontrol.domain.goals.Goal
+import com.example.cashincontrol.domain.saving.UserDataSaveClass
+import com.example.cashincontrol.domain.saving.UserDataStoreManager
+import com.example.cashincontrol.domain.saving.database.DbHandler
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
@@ -19,9 +23,11 @@ class UserClass {
         var goal: Goal? = null
         var currentMoney: Float = 1000F
         var isOnboardingCompleted: Boolean = false
-        var startDate: LocalDate? = LocalDate.now()
+        var startDate: LocalDate = LocalDate.now()
 
-        fun setupUserData(){
+        @Composable
+        fun SetupUserData(dataStoreManager: UserDataStoreManager){
+
             val result = DbHandler.getCategories()
             if (result.isEmpty()) {
                 createCategory("Продукты", true)
@@ -31,6 +37,11 @@ class UserClass {
             }
 
             transactions = DbHandler.getTransactions()
+
+            val userData = dataStoreManager.getData().collectAsState(initial = UserDataSaveClass()).value
+            goal = userData.goal
+            isOnboardingCompleted = userData.onboardingCompleted
+            startDate = userData.startDate
         }
 
         fun getExpensesCategory(): List<ExpensesCategory> {

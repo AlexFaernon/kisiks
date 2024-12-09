@@ -83,7 +83,7 @@ fun InflationScreen(
                     .fillMaxSize()
                     .wrapContentHeight()
                     .padding(paddingValues),
-                text = "Нет данных",
+                text = "Недостаточно данных",
                 fontSize = 32.sp,
                 color = Color.Gray,
                 textAlign = TextAlign.Center
@@ -135,8 +135,10 @@ fun MainInflation(){
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
+
+        val iconRes = if (Inflation.GlobalInflation < 0) R.drawable.icon_down else R.drawable.icon_up
         Icon(
-            painter = painterResource(R.drawable.icon_up),
+            painter = painterResource(iconRes),
             contentDescription = null,
             modifier = Modifier.size(40.dp),
             tint = Color.Unspecified
@@ -157,8 +159,9 @@ fun DynamicInflation(){
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val iconRes = if (Inflation.GlobalInflation < 0) R.drawable.icon_down_exclaim else R.drawable.screamer
         Icon(
-            painter = painterResource(R.drawable.screamer),
+            painter = painterResource(iconRes),
             contentDescription = null,
             modifier = Modifier.size(height = 40.dp, width = 10.dp),
             tint = Color.Unspecified
@@ -166,8 +169,10 @@ fun DynamicInflation(){
 
         Spacer(modifier = Modifier.width(5.dp))
 
+        val textRes = if (Inflation.GlobalInflation < 0) "ниже" else "выше"
+
         Text(
-            text = "Ваш уровень личной инфляции выше среднего",
+            text = "Ваш уровень личной инфляции $textRes среднего",
             fontSize = 13.sp,
             color = Color.Gray,
         )

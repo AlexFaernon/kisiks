@@ -50,10 +50,10 @@ import kotlin.random.Random
 
 @Composable
 fun AnalyticsScreen() {
-    if (UserClass.transactions.isEmpty()) {
+    if (UserClass.getExpensesTransactions().isEmpty() || UserClass.getIncomeTransactions().isEmpty()) {
         Text(
             modifier = Modifier.fillMaxSize().wrapContentHeight(),
-            text = "Нет данных",
+            text = "Недостаточно данных",
             fontSize = 32.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center

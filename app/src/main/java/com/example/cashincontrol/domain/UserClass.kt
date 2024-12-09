@@ -121,6 +121,11 @@ class UserClass {
             return transactions.filterIsInstance<ExpensesTransaction>()
         }
 
+        fun getIncomeTransactions(): List<Transaction>
+        {
+            return transactions.filterIsInstance<IncomeTransaction>()
+        }
+
         fun getDaysSinceStart(): Long {
             return ChronoUnit.DAYS.between(startDate, LocalDate.now()) + 1
         }

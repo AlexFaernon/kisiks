@@ -71,7 +71,8 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.bankParsing.BankParser
+import com.example.cashincontrol.domain.parsing.BankParser
+import com.example.cashincontrol.domain.parsing.CheckParser
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -527,7 +528,7 @@ fun CheckUploadButton(navController: NavController) {
             uri.let {
                 val inputStream = context.contentResolver.openInputStream(it)
                 inputStream?.use { stream ->
-                    //todo вызов парсера
+                    CheckParser.parse(stream)
                 }
             }
         }

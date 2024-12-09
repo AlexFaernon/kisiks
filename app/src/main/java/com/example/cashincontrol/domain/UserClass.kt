@@ -2,11 +2,12 @@ package com.example.cashincontrol.domain
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.data.saving.UserDataSaveClass
 import com.example.cashincontrol.data.saving.UserDataStoreManager
 import com.example.cashincontrol.data.saving.database.DbHandler
+import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.domain.transaction.Category
+import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -20,11 +21,8 @@ class UserClass {
     companion object {
         var transactions: MutableList<Transaction> = mutableListOf()
         private var categories: MutableList<Category> = mutableListOf()
+        private var checkCategories: MutableList<CheckCategory> = mutableListOf()
         var goal: Goal? = null
-            set(value) {
-                field = value
-                
-            }
         var currentMoney: Float = 1000F
         var isOnboardingCompleted: Boolean = false
         var startDate: LocalDate = LocalDate.now()

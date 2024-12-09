@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.rememberCoroutineScope
+import com.example.cashincontrol.data.saving.UserDataStoreManager
+import com.example.cashincontrol.data.saving.database.DbHandler
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.saving.UserDataStoreManager
-import com.example.cashincontrol.domain.saving.database.DbHandler
 import com.example.cashincontrol.presentation.Start
 import com.example.cashincontrol.ui.theme.CashInControlTheme
 import kotlinx.coroutines.CoroutineScope
@@ -28,11 +28,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        DbHandler.closeDatabase()
+    override fun onStop() {
         coroutine.launch {
             dataStoreManager.saveData()
         }
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        DbHandler.closeDatabase()
         super.onDestroy()
     }
 }

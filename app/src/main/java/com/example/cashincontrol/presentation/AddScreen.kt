@@ -71,12 +71,10 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
-import com.example.cashincontrol.domain.bankParcing.BankParser
+import com.example.cashincontrol.domain.bankParsing.BankParser
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate

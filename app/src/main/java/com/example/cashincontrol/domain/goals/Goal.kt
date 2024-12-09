@@ -1,6 +1,6 @@
 package com.example.cashincontrol.domain.goals
 
-import com.example.cashincontrol.domain.saving.LocalDateSerializer
+import com.example.cashincontrol.data.saving.LocalDateSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.Period

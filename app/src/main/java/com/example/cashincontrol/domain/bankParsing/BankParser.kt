@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.bankParcing
+package com.example.cashincontrol.domain.bankParsing
 
 import com.example.cashincontrol.domain.UserClass
 import com.itextpdf.kernel.pdf.PdfDocument

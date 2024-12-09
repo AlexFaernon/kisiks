@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.saving
+package com.example.cashincontrol.data.saving
 
 import androidx.datastore.core.Serializer
 import kotlinx.coroutines.Dispatchers

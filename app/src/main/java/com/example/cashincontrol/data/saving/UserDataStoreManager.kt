@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.saving
+package com.example.cashincontrol.data.saving
 
 import android.content.Context
 import androidx.datastore.dataStore

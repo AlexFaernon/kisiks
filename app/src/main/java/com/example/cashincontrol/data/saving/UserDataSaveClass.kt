@@ -1,4 +1,4 @@
-package com.example.cashincontrol.domain.saving
+package com.example.cashincontrol.data.saving
 
 import com.example.cashincontrol.domain.goals.Goal
 import kotlinx.serialization.Serializable

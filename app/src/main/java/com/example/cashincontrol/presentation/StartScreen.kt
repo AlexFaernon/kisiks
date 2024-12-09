@@ -31,7 +31,7 @@ fun Start() {
             }
 
         },
-    ) {
-        NavGraph(navHostController = navController, isBottomBarVisible = { isBottomBarVisible.value = it })
+    ) { paddingValues ->
+        NavGraph(navHostController = navController, isBottomBarVisible = { isBottomBarVisible.value = it }, paddingValues)
     }
 }

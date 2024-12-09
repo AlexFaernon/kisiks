@@ -1,5 +1,6 @@
 package com.example.cashincontrol.presentation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,7 +10,8 @@ import com.example.cashincontrol.domain.UserClass
 @Composable
 fun NavGraph(
     navHostController: NavHostController,
-    isBottomBarVisible: (Boolean) -> Unit
+    isBottomBarVisible: (Boolean) -> Unit,
+    paddingValues: PaddingValues
 ) {
     NavHost(navController = navHostController, startDestination = "main") {
         composable("main") {
@@ -19,7 +21,7 @@ fun NavGraph(
             Analytic()
         }
         composable("inflation") {
-            Inflation(navController = navHostController, isBottomBarVisible = isBottomBarVisible)
+            Inflation(navController = navHostController, isBottomBarVisible = isBottomBarVisible, paddingValues = paddingValues)
         }
         composable("goal") {
             Goal(navHostController)

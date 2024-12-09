@@ -212,6 +212,7 @@ private fun MainSection(
         TransactionCommentSection(transactionComment)
         TransactionSwitchSection(isRegular)
         FileUploadButton(navController)
+        CheckUploadButton(navController)
         MoneyInputField(moneyAmount)
     }
 }
@@ -514,6 +515,42 @@ fun FileUploadButton(navController: NavController) {
         )
     }
 }
+
+@Composable
+fun CheckUploadButton(navController: NavController) {
+    val pdfUris = remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris: List<Uri> ->
+        pdfUris.value = uris
+        uris.forEach { uri ->
+            uri.let {
+                val inputStream = context.contentResolver.openInputStream(it)
+                inputStream?.use { stream ->
+                    //todo вызов парсера
+                }
+            }
+        }
+        navController.navigate("main")
+    }
+
+    Button(
+        onClick = { launcher.launch(arrayOf("application/pdf")) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(4.dp))
+            .padding(vertical = 3.dp, horizontal = 10.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+    ) {
+        Text(
+            text = "Загрузить чеки в формате PDF",
+            color = Color.Black,
+            fontWeight = FontWeight.Normal,
+            fontSize = 20.sp
+        )
+    }
+}
+
 
 @Composable
 fun MoneyInputField(moneyAmount: MutableState<String>) {

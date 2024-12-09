@@ -2,24 +2,31 @@ package com.example.cashincontrol.presentation
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -52,7 +59,8 @@ import java.time.Month
 @Composable
 fun InflationScreen(
     navController: NavController,
-    isBottomBarVisible: (Boolean) -> Unit
+    isBottomBarVisible: (Boolean) -> Unit,
+    paddingValues: PaddingValues
 ) {
     if (!UserClass.isOnboardingCompleted) {
         isBottomBarVisible(false)
@@ -73,7 +81,8 @@ fun InflationScreen(
             Text(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .padding(paddingValues),
                 text = "Нет данных",
                 fontSize = 32.sp,
                 color = Color.Gray,
@@ -81,9 +90,12 @@ fun InflationScreen(
             )
         } else {
             Inflation.updateInflation()
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(scrollState)
                     .padding(start = 10.dp, top = 30.dp, end = 10.dp)
                     .background(Color.White),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -167,16 +179,23 @@ fun DynamicInflation(){
 fun CategoryInflation(){
     Inflation.updateCategoryInflation()
     val inflation = Inflation.CategoryInflation
-    Log.d("ИНФЛЯЦИЯ", "DataForm: ${inflation.entries.size}")
-    Text(
-        text = "Категории",
-        fontSize = 20.sp,
-        color = Color.Black,
-        modifier = Modifier
-            .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    )
-    CategoriesInflationGrid(inflation)
+    val isExpanded = remember { mutableStateOf(true) }
+
+    Column {
+        Text(
+            text = "Категории",
+            fontSize = 20.sp,
+            color = Color.Black,
+            modifier = Modifier
+                .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .clickable { isExpanded.value = !isExpanded.value }
+        )
+
+        if (isExpanded.value) {
+            CategoriesInflationGrid(inflation)
+        }
+    }
 }
 
 @Composable
@@ -185,6 +204,7 @@ fun CategoriesInflationGrid(inflation:  Map<ExpensesCategory, Float>) {
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(max = 500.dp)
             .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)

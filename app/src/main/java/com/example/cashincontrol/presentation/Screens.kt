@@ -1,5 +1,6 @@
 package com.example.cashincontrol.presentation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
@@ -19,8 +20,8 @@ fun Analytic() {
 }
 
 @Composable
-fun Inflation(navController: NavController, isBottomBarVisible: (Boolean) -> Unit) {
-    InflationScreen(navController,isBottomBarVisible)
+fun Inflation(navController: NavController, isBottomBarVisible: (Boolean) -> Unit, paddingValues: PaddingValues) {
+    InflationScreen(navController,isBottomBarVisible, paddingValues)
 }
 
 @Composable

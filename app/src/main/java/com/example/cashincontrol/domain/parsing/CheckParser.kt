@@ -1,6 +1,7 @@
 package com.example.cashincontrol.domain.parsing
 
 import android.util.Log
+import com.example.cashincontrol.domain.UserClass
 import java.io.InputStream
 
 class CheckParser {
@@ -14,17 +15,19 @@ class CheckParser {
                 .substringBefore("Итог")
 
             val checkRegex = """^\d+\s*(.*)(?:\n.*)*?\nЦена\*Кол\s*([\d.]*).*\n""".toRegex(RegexOption.MULTILINE)
-            val goodsNameRegex = """^\d+\s*(.*)\n""".toRegex(RegexOption.MULTILINE)
-            val priceRegex = """Цена\*Кол\s*([\d.]*).*\n""".toRegex()
+//            val goodsNameRegex = """^\d+\s*(.*)\n""".toRegex(RegexOption.MULTILINE)
+//            val priceRegex = """Цена\*Кол\s*([\d.]*).*\n""".toRegex()
 
             Log.d("Parsing", "Start check parsing")
 
-            val goodsNames = goodsNameRegex.findAll(parseString).toList()
-            val prices = priceRegex.findAll(parseString).toList()
-
             for (match in checkRegex.findAll(parseString)){
-                val (name, price) = match.destructured
-                Log.d("Check parsing", "${name}\n${price}")
+                val (nameRaw, priceStr) = match.destructured
+                val namesForCategory = nameRaw.split(' ', '.').toMutableList().filter { it.all { it.isLetter() } }.map { it.lowercase() }
+                val price = priceStr.replace(',', '.').toFloat()
+                val checkCategory = UserClass.findCheckCategory(namesForCategory)
+                if (checkCategory != null){
+                    Log.d("checkCategory", "Found ${checkCategory.name} for $nameRaw; price: $price")
+                }
             }
         }
     }

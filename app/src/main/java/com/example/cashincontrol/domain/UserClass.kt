@@ -6,6 +6,7 @@ import com.example.cashincontrol.data.saving.UserDataSaveClass
 import com.example.cashincontrol.data.saving.UserDataStoreManager
 import com.example.cashincontrol.data.saving.database.DbHandler
 import com.example.cashincontrol.domain.goals.Goal
+import com.example.cashincontrol.domain.parsing.baseCheckCategories
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
@@ -21,7 +22,7 @@ class UserClass {
     companion object {
         var transactions: MutableList<Transaction> = mutableListOf()
         private var categories: MutableList<Category> = mutableListOf()
-        private var checkCategories: MutableList<CheckCategory> = mutableListOf()
+        private var checkCategories: MutableList<CheckCategory> = baseCheckCategories.toMutableList()
         var goal: Goal? = null
         var currentMoney: Float = 1000F
         var isOnboardingCompleted: Boolean = false
@@ -91,7 +92,7 @@ class UserClass {
         }
 
         fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
-            val category = checkCategory(categoryName, isExpenses)
+            val category = isCategoryExists(categoryName, isExpenses)
             category?.let {
                 return category
             }
@@ -100,7 +101,7 @@ class UserClass {
         }
 
         fun createCategory(categoryName: String, isExpenses: Boolean): Category{
-            val category = checkCategory(categoryName, isExpenses)
+            val category = isCategoryExists(categoryName, isExpenses)
             var newCategory: Category
             category?: run {
                 newCategory = if (isExpenses) { ExpensesCategory(categoryName) } else { IncomeCategory(categoryName) }
@@ -111,7 +112,7 @@ class UserClass {
             throw IllegalArgumentException("Category already exists")
         }
 
-        private fun checkCategory(categoryName: String, isExpenses: Boolean): Category?{
+        private fun isCategoryExists(categoryName: String, isExpenses: Boolean): Category?{
             val targetType = if (isExpenses) ExpensesCategory::class.simpleName else IncomeCategory::class.simpleName
             return categories.firstOrNull { it.name == categoryName && it::class.simpleName == targetType}
         }
@@ -124,6 +125,21 @@ class UserClass {
         fun getIncomeTransactions(): List<Transaction>
         {
             return transactions.filterIsInstance<IncomeTransaction>()
+        }
+
+        fun addCheckCategory(name: String, aliasesStr: String) =
+            checkCategories.add(CheckCategory(name, aliasesStr.split('.',',',' ').toHashSet()))
+
+        fun findCheckCategory(maybeAliases: List<String>): CheckCategory? {
+            for (checkCategory in checkCategories){
+                for (maybeAlias in maybeAliases){
+                    if (checkCategory.alias.contains(maybeAlias)){
+                        return checkCategory
+                    }
+                }
+            }
+
+            return null
         }
 
         fun getDaysSinceStart(): Long {

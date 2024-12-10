@@ -1,6 +1,9 @@
 package com.example.cashincontrol.domain.transaction
 
-data class CheckCategory(
-    val name: String,
-    val alias: MutableList<String>
-)
+import com.example.cashincontrol.R
+
+data class CheckCategory (
+    override var name: String,
+    val alias: HashSet<String>,
+    override val icon: Int = R.drawable.icon_shop
+): Category()

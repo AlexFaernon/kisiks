@@ -67,6 +67,11 @@ class UserClass {
             return result
         }
 
+        fun getCheckCategory(): List<CheckCategory>
+        {
+            return checkCategories
+        }
+
         fun addTransaction(
             isExpenses: Boolean,
             sum: Float,
@@ -145,5 +150,7 @@ class UserClass {
         fun getDaysSinceStart(): Long {
             return ChronoUnit.DAYS.between(startDate, LocalDate.now()) + 1
         }
+
+
     }
 }

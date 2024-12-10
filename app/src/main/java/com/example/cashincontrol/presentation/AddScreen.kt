@@ -132,7 +132,6 @@ fun AddScreen(navController: NavController) {
                 val dataForm = DataForm(
                     transactionType = transactionType.value,
                     transactionCategory = transactionCategory.value,
-//                    transactionKind = transactionKind.value,
                     transactionDate = transactionDate.value,
                     transactionComment = transactionComment.value,
                     isRegular = isRegular.value,
@@ -382,7 +381,11 @@ fun resetFormFields(
 fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactionType: String) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    var categoryList = if (transactionType == "Доход") UserClass.getIncomeCategory() else UserClass.getExpensesCategory()
+
+    val expensesCategories = UserClass.getExpensesCategory()
+    val checkCategories = UserClass.getCheckCategory()
+
+    val combinedCategories = if (transactionType == "Доход") UserClass.getIncomeCategory() else expensesCategories + checkCategories
 
     Box(
         modifier = Modifier
@@ -399,20 +402,31 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
             fontWeight = FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start = 5.dp).align(Alignment.Center)
+            modifier = Modifier
+                .padding(start = 5.dp)
+                .align(Alignment.Center)
         )
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            categoryList.forEach { category ->
+            combinedCategories.forEach { category ->
+                val isExpenseCategory = expensesCategories.contains(category)
+                val backgroundColor = if (isExpenseCategory) Color(0xFFFFCDD2) else Color(0xFFC8E6C9)
+
                 DropdownMenuItem(
-                    text = { Text(category.name) },
+                    text = {
+                        Text(
+                            text = category.name,
+                            color = Color.Black
+                        )
+                    },
                     onClick = {
                         transactionCategory.value = category
                         expanded = false
-                    }
+                    },
+                    modifier = Modifier.background(backgroundColor)
                 )
             }
             DropdownMenuItem(
@@ -435,12 +449,19 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
+
 @Composable
-fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategoryAdded: (Category) -> Unit) {
+fun AddCategoryDialog(
+    onDismiss: () -> Unit,
+    transactionType: String,
+    onCategoryAdded: (Category) -> Unit
+) {
     var newCategory = remember {
         mutableStateOf(if (transactionType == "Доход") IncomeCategory("") else ExpensesCategory(""))
     }
+    val isInfCategory = remember { mutableStateOf(false) }
+    val tags = remember { mutableStateOf("") }
+    val tagsError = remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -452,14 +473,59 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategor
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Добавить новую категорию", style = MaterialTheme.typography.titleMedium)
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 OutlinedTextField(
                     value = newCategory.value.name,
-                    onValueChange = {newCategory.value = if (transactionType == "Доход") IncomeCategory(it) else ExpensesCategory(it)},
+                    onValueChange = {
+                        newCategory.value = if (transactionType == "Доход") IncomeCategory(it) else ExpensesCategory(it)
+                    },
                     label = { Text("Название категории") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (transactionType != "Доход") {
+                    if (isInfCategory.value) {
+                        OutlinedTextField(
+                            value = tags.value,
+                            onValueChange = {
+                                tags.value = it
+                                tagsError.value = !validateTags(it)
+                            },
+                            label = { Text("Теги категории") },
+                            isError = tagsError.value,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (tagsError.value) {
+                            Text(
+                                text = "Неверный формат тегов. Разделяйте слова запятыми, точками или пробелами.",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Добавить теги", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Switch(
+                            checked = isInfCategory.value,
+                            onCheckedChange = { isInfCategory.value = it }
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -470,8 +536,21 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategor
                     TextButton(
                         onClick = {
                             if (newCategory.value.name.isNotBlank()) {
-                                UserClass.createCategory(newCategory.value.name, newCategory.value is ExpensesCategory)
-                                onCategoryAdded(newCategory.value)
+                                if (transactionType != "Доход" && isInfCategory.value && tags.value.isNotBlank()) {
+                                    if (!tagsError.value) {
+                                        UserClass.addCheckCategory(
+                                            newCategory.value.name,
+                                            tags.value
+                                        )
+                                        onCategoryAdded(newCategory.value)
+                                    }
+                                } else {
+                                    UserClass.createCategory(
+                                        newCategory.value.name,
+                                        newCategory.value is ExpensesCategory
+                                    )
+                                    onCategoryAdded(newCategory.value)
+                                }
                                 onDismiss()
                             }
                         }
@@ -483,6 +562,12 @@ fun AddCategoryDialog(onDismiss: () -> Unit, transactionType: String,  onCategor
         }
     }
 }
+
+private fun validateTags(tags: String): Boolean {
+    val parts = tags.split(Regex("[,\\.\\s]+"))
+    return parts.all { it.isNotBlank() && it.matches(Regex("[A-Za-zА-Яа-я0-9]+")) }
+}
+
 
 @Composable
 fun FileUploadButton(navController: NavController) {

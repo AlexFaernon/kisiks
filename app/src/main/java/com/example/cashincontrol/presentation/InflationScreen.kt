@@ -90,6 +90,7 @@ fun InflationScreen(
             )
         } else {
             Inflation.updateInflation()
+            Inflation.updateCategoryInflation()
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
@@ -102,7 +103,7 @@ fun InflationScreen(
             ) {
                 MainInflation()
                 DynamicInflation()
-                CategoryInflation()
+                CategoryInflation(Inflation.CategoryInflation)
             }
         }
     }
@@ -181,9 +182,7 @@ fun DynamicInflation(){
 }
 
 @Composable
-fun CategoryInflation(){
-    Inflation.updateCategoryInflation()
-    val inflation = Inflation.CategoryInflation
+fun CategoryInflation(inflation: Map<ExpensesCategory, Float>){
     val isExpanded = remember { mutableStateOf(true) }
 
     Column {

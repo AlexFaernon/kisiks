@@ -74,6 +74,7 @@ import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.parsing.BankParser
 import com.example.cashincontrol.domain.parsing.CheckParser
 import com.example.cashincontrol.domain.transaction.Category
+import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.IncomeCategory
 import java.text.SimpleDateFormat
@@ -138,8 +139,14 @@ fun AddScreen(navController: NavController) {
                     moneyAmount = moneyAmount.value.toFloatOrNull() ?: 0f
                 )
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
-                val isExpenses = dataForm.transactionType != "Доход"
-                UserClass.addTransaction(isExpenses, dataForm.moneyAmount, dataForm.transactionDate.atStartOfDay(), dataForm.transactionCategory, dataForm.transactionComment)
+
+                if (dataForm.transactionCategory is CheckCategory){
+                    // todo добавление из чека
+                }
+                else{
+                    val isExpenses = dataForm.transactionType != "Доход"
+                    UserClass.addTransaction(isExpenses, dataForm.moneyAmount, dataForm.transactionDate.atStartOfDay(), dataForm.transactionCategory, dataForm.transactionComment)
+                }
                 navController.navigate("main")
             },
             colors = ButtonDefaults.buttonColors(

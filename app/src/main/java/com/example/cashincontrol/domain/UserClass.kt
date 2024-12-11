@@ -90,7 +90,7 @@ class UserClass {
                 return
             }
 
-            val index = if (insertIndex==0) 0 else -insertIndex - 1
+            val index = if (insertIndex >= 0) insertIndex else -insertIndex - 1
             transactions.add(index, newTransaction)
             DbHandler.addTransaction(newTransaction)
             currentMoney += if (isExpenses) -sum else sum

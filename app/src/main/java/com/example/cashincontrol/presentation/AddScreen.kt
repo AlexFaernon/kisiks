@@ -4,7 +4,6 @@
 
 package com.example.cashincontrol.presentation
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -141,7 +140,10 @@ fun AddScreen(navController: NavController) {
                 Log.d("СОХРАНИТЬ", "DataForm: $dataForm")
 
                 if (dataForm.transactionCategory is CheckCategory){
-                    // todo добавление из чека
+                    val date = dataForm.transactionDate.atStartOfDay()
+                    val category: CheckCategory = dataForm.transactionCategory
+                    val sum = dataForm.moneyAmount
+                    UserClass.addCheckTransaction(date, mutableMapOf(category to sum))
                 }
                 else{
                     val isExpenses = dataForm.transactionType != "Доход"

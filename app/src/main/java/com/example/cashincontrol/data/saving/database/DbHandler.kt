@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.transaction.Category
+import com.example.cashincontrol.domain.transaction.CheckTransaction
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -45,6 +46,10 @@ class DbHandler {
             }
 
             Log.d("Transaction db", db.insert(TransactionTable.TABLE_NAME, null, values).toString())
+        }
+
+        fun addCheckTransaction(checkTransaction: CheckTransaction){
+
         }
 
         fun getCategories(): MutableList<Category>{

@@ -1,5 +1,6 @@
 package com.example.cashincontrol.domain
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.example.cashincontrol.data.saving.UserDataSaveClass
@@ -9,6 +10,7 @@ import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.domain.parsing.baseCheckCategories
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.CheckCategory
+import com.example.cashincontrol.domain.transaction.CheckTransaction
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -22,6 +24,7 @@ class UserClass {
     companion object {
         var transactions: MutableList<Transaction> = mutableListOf()
         private var categories: MutableList<Category> = mutableListOf()
+        private var checkTransactions: MutableList<CheckTransaction> = mutableListOf()
         private var checkCategories: MutableList<CheckCategory> = baseCheckCategories.toMutableList()
         var goal: Goal? = null
         var currentMoney: Float = 1000F
@@ -133,7 +136,20 @@ class UserClass {
         }
 
         fun addCheckCategory(name: String, aliasesStr: String) =
-            checkCategories.add(CheckCategory(name, aliasesStr.split('.',',',' ').toHashSet()))
+            checkCategories.add(CheckCategory(name, aliasesStr.split('.', ',', ' ').toHashSet()))
+
+        fun addCheckTransaction(datetime: LocalDateTime, checkCategories: Map<CheckCategory, Float>){
+            val newTransaction = CheckTransaction(datetime, checkCategories)
+            val insertIndex = checkTransactions.binarySearch(newTransaction, compareBy<CheckTransaction> { it.date }.reversed())
+            if (insertIndex >= 0) {
+                Log.d("New transaction", "Transaction by price ${newTransaction.categories.values.sum()} discarded")
+                return
+            }
+
+            val index = -insertIndex - 1
+            checkTransactions.add(index, newTransaction)
+            DbHandler.addCheckTransaction(newTransaction)
+        }
 
         fun findCheckCategory(maybeAliases: List<String>): CheckCategory? {
             for (checkCategory in checkCategories){

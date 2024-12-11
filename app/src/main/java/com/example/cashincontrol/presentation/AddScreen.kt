@@ -217,7 +217,7 @@ private fun MainSection(
 //        TransactionKindSection(transactionKind)
         TransactionDateSection(transactionDate)
         TransactionCommentSection(transactionComment)
-        TransactionSwitchSection(isRegular)
+//        TransactionSwitchSection(isRegular)
         FileUploadButton(navController)
         CheckUploadButton(navController)
         MoneyInputField(moneyAmount)

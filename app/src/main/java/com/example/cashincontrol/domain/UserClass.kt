@@ -34,15 +34,25 @@ class UserClass {
         @Composable
         fun SetupUserData(dataStoreManager: UserDataStoreManager){
 
-            val result = DbHandler.getCategories()
-            if (result.isEmpty()) {
+            val categoriesFromDb = DbHandler.getCategories()
+            if (categoriesFromDb.isEmpty()) {
                 createCategory("Продукты", true)
                 createCategory("Зарплата", false)
             } else {
-                categories = result
+                categories = categoriesFromDb
+            }
+
+            val checkCategoriesFromDb = DbHandler.getCheckCategories()
+            if (checkCategoriesFromDb.isEmpty()) {
+                for (cat in baseCheckCategories) {
+                    addCheckCategory(cat)
+                }
+            } else {
+                checkCategories = checkCategoriesFromDb
             }
 
             transactions = DbHandler.getTransactions()
+            checkTransactions = DbHandler.getCheckTransactions()
 
             val userData = dataStoreManager.getData().collectAsState(initial = UserDataSaveClass()).value
             goal = userData.goal
@@ -70,7 +80,16 @@ class UserClass {
             return result
         }
 
-        fun getCheckCategory(): List<CheckCategory>
+        fun getCheckCategory(name: String): CheckCategory{
+            val checkCategory = checkCategories.find { it.name == name }
+            if (checkCategory == null){
+                throw IllegalArgumentException("Check category not found")
+            }
+
+            return checkCategory
+        }
+
+        fun getCheckCategories(): List<CheckCategory>
         {
             return checkCategories
         }
@@ -135,8 +154,15 @@ class UserClass {
             return transactions.filterIsInstance<IncomeTransaction>()
         }
 
-        fun addCheckCategory(name: String, aliasesStr: String) =
-            checkCategories.add(CheckCategory(name, aliasesStr.split('.', ',', ' ').toHashSet()))
+        fun addCheckCategory(name: String, aliasesStr: String) {
+            val checkCategory = CheckCategory(name, aliasesStr.split('.', ',', ' ').toHashSet())
+            addCheckCategory(checkCategory)
+        }
+
+        private fun addCheckCategory(checkCategory: CheckCategory){
+            checkCategories.add(checkCategory)
+            DbHandler.addCheckCategory(checkCategory)
+        }
 
         fun addCheckTransaction(datetime: LocalDateTime, checkCategories: Map<CheckCategory, Float>){
             val newTransaction = CheckTransaction(datetime, checkCategories)
@@ -151,7 +177,7 @@ class UserClass {
             DbHandler.addCheckTransaction(newTransaction)
         }
 
-        fun findCheckCategory(maybeAliases: List<String>): CheckCategory? {
+        fun findCheckCategoryByAlias(maybeAliases: List<String>): CheckCategory? {
             for (checkCategory in checkCategories){
                 for (maybeAlias in maybeAliases){
                     if (checkCategory.alias.contains(maybeAlias)){
@@ -166,7 +192,5 @@ class UserClass {
         fun getDaysSinceStart(): Long {
             return ChronoUnit.DAYS.between(startDate, LocalDate.now()) + 1
         }
-
-
     }
 }

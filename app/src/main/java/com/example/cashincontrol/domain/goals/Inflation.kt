@@ -59,7 +59,7 @@ class Inflation {
             return meanByMonth
         }
 
-        fun updateCategoryInflation(){
+        private fun updateCategoryInflation(){
             val lastPeriod =  getCategoriesMeanForMonth(LocalDate.now())
             val previousPeriod = getCategoriesMeanForMonth(LocalDate.now().minusMonths(1))
 

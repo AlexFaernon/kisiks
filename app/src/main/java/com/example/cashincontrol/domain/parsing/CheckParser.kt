@@ -18,7 +18,8 @@ class CheckParser {
                 .substringBefore("Итог")
 
             val datetimeRegex = """(\d\d.\d\d.\d\d\d\d) \| (\d\d:\d\d)""".toRegex()
-            val (date, time) = datetimeRegex.find(parseString)!!.destructured
+            val datetimeRaw = datetimeRegex.find(parseString) ?: return
+            val (date, time) = datetimeRaw.destructured
             val checkDatetime = LocalDateTime.parse(
                 "$date $time",
                 DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
@@ -34,7 +35,7 @@ class CheckParser {
                 val (nameRaw, priceStr) = match.destructured
                 val namesForCategory = nameRaw.split(' ', '.').toMutableList().filter { it.all { it.isLetter() } }.map { it.lowercase() }
                 val price = priceStr.replace(',', '.').toFloat()
-                val checkCategory = UserClass.findCheckCategory(namesForCategory)
+                val checkCategory = UserClass.findCheckCategoryByAlias(namesForCategory)
                 if (checkCategory != null){
                     Log.d("checkCategory", "Found ${checkCategory.name} for $nameRaw; price: $price")
 

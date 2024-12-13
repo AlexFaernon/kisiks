@@ -392,7 +392,7 @@ fun CategoryDropdownMenu(transactionCategory: MutableState<Category>, transactio
     var showDialog by remember { mutableStateOf(false) }
 
     val expensesCategories = UserClass.getExpensesCategory()
-    val checkCategories = UserClass.getCheckCategory()
+    val checkCategories = UserClass.getCheckCategories()
 
     val combinedCategories = if (transactionType == "Доход") UserClass.getIncomeCategory() else expensesCategories + checkCategories
 

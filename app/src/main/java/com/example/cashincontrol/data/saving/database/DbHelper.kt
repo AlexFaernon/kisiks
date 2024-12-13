@@ -14,7 +14,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, 1){
                 "${CategoryTable.CATEGORY_NAME} TEXT NOT NULL," +
                 "${CategoryTable.ICON_ID} INTEGER NOT NULL," +
                 "${CategoryTable.IS_EXPENSES} INTEGER NOT NULL)")
-        Log.d("Category BD", "Bb created")
+        Log.d("Category BD", "Db created")
 
         db.execSQL("CREATE TABLE ${TransactionTable.TABLE_NAME} (" +
                 "${TransactionTable.PRIMARY_KEY} INTEGER PRIMARY KEY," +
@@ -24,6 +24,19 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, 1){
                 "${TransactionTable.CATEGORY} TEXT NOT NULL," +
                 "${TransactionTable.IS_EXPENSES} INTEGER NOT NULL)")
         Log.d("Transaction Db", "Db created")
+
+        db.execSQL("CREATE TABLE ${CheckCategoryTable.TABLE_NAME} (" +
+                "${CheckCategoryTable.PRIMARY_KEY} INTEGER PRIMARY KEY," +
+                "${CheckCategoryTable.NAME} TEXT NOT NULL," +
+                "${CheckCategoryTable.ICON_ID} INTEGER NOT NULL," +
+                "${CheckCategoryTable.ALIASES} TEXT NOT NULL)")
+        Log.d("Check Category BD", "Db created")
+
+        db.execSQL("CREATE TABLE ${CheckTransactionsTable.TABLE_NAME} (" +
+                "${CheckTransactionsTable.PRIMARY_KEY} INTEGER PRIMARY KEY," +
+                "${CheckTransactionsTable.DATE} TEXT NOT NULL," +
+                "${CheckTransactionsTable.CATEGORIES} TEXT NOT NULL)")
+        Log.d("Check Transaction BD", "Db created")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

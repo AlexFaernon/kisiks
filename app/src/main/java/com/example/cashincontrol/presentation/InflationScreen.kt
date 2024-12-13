@@ -50,6 +50,7 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.goals.Inflation
+import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import java.time.Month
 
@@ -100,6 +101,7 @@ fun InflationScreen(
                 MainInflation()
                 DynamicInflation()
                 CategoryInflation(Inflation.CategoryInflation)
+                CheckInflation(Inflation.CheckInflation)
             }
         }
     }
@@ -199,6 +201,45 @@ fun CategoryInflation(inflation: Map<ExpensesCategory, Float>){
 }
 
 @Composable
+fun CheckInflation(inflation: Map<CheckCategory, Float>){
+    val isExpanded = remember { mutableStateOf(true) }
+
+    Column {
+        Text(
+            text = "Товары и услуги",
+            fontSize = 20.sp,
+            color = Color.Black,
+            modifier = Modifier
+                .background(Color(0xFFDCFFBB), shape = RoundedCornerShape(3.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .clickable { isExpanded.value = !isExpanded.value }
+        )
+
+        if (isExpanded.value) {
+            CheckCategoriesInflationGrid(inflation)
+        }
+    }
+}
+
+
+@Composable
+fun CheckCategoriesInflationGrid(inflation:  Map<CheckCategory, Float>) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = 500.dp)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(inflation.entries.toList().size) { index ->
+            CheckCategoryInflationCard(inflation.entries.toList()[index])
+        }
+    }
+}
+
+@Composable
 fun CategoriesInflationGrid(inflation:  Map<ExpensesCategory, Float>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -214,6 +255,45 @@ fun CategoriesInflationGrid(inflation:  Map<ExpensesCategory, Float>) {
         }
     }
 }
+
+@Composable
+fun CheckCategoryInflationCard(inflation: Map. Entry<CheckCategory, Float>){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = String.format("%.1f %%", inflation.value),
+                fontSize = 24.sp,
+                color = Color.Black,
+            )
+            Text(
+                text = inflation.key.name.limit(15),
+                fontSize = 14.sp,
+                color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        val iconRes = if (inflation.value < 0) R.drawable.icon_down else R.drawable.icon_up
+
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = Color.Unspecified
+        )
+    }
+}
+
 
 @Composable
 fun CategoryInflationCard(inflation: Map. Entry<ExpensesCategory, Float>){
@@ -257,6 +337,20 @@ fun CategoryInflationCard(inflation: Map. Entry<ExpensesCategory, Float>){
 private fun InflationChart() {
     val data = Inflation.YearInflation
     val reversedData = data.entries.reversed()
+
+    val block = listOf(Point(x = 1f, 7.27f),
+        Point(x = 2f, 7.5f),
+        Point(x = 3f, 7.52f),
+        Point(x = 4f, 7.82f),
+        Point(x = 5f, 7.70f),
+        Point(x = 6f, 7.86f),
+        Point(x = 7f, 8.49f),
+        Point(x = 8f, 9.09f),
+        Point(x = 9f, 8.71f),
+        Point(x = 10f, 8.41f),
+        Point(x = 11f, 8.52f),
+        Point(x = 12f, 8.62f)
+        )
 
     val firstMonth = reversedData.firstOrNull()?.key ?: Month.JANUARY
     val pointsData = getPoints(reversedData).sortedBy { it.x }
@@ -312,6 +406,20 @@ private fun InflationChart() {
                     SelectionHighlightPoint(),
                     ShadowUnderLine(
                         color = Color(0xFFbb73ff)
+                    ),
+                    SelectionHighlightPopUp()
+                ),
+                Line(
+                    dataPoints = block,
+                    LineStyle(
+                        color = Color(0xFFffbb73)
+                    ),
+                    IntersectionPoint(
+                        color = Color(0xFFffbb73)
+                    ),
+                    SelectionHighlightPoint(),
+                    ShadowUnderLine(
+                        color = Color(0xFFffbb73)
                     ),
                     SelectionHighlightPopUp()
                 )
@@ -387,6 +495,7 @@ private fun getPoints(data: List<Map.Entry<Month, Float>>): List<Point>{
     return data
         .map { (month, inflation) ->
         Point(x = month.value.toFloat(), inflation)
+            //todo убрать деление на 30
     }
 }
 

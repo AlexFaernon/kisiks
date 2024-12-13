@@ -20,7 +20,7 @@ fun BottomNavigation(
         BottomItem.ScreenAnalytics,
         BottomItem.ScreenGoal,
         BottomItem.ScreenInflation,
-        BottomItem.ScreenSettings
+        //BottomItem.ScreenSettings
     )
     NavigationBar (
         containerColor = Color(0xFFBEC399),

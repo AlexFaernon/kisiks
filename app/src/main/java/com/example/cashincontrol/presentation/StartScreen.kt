@@ -24,7 +24,7 @@ fun Start() {
                     BottomItem.ScreenAnalytics.route,
                     BottomItem.ScreenInflation.route,
                     BottomItem.ScreenGoal.route,
-                    BottomItem.ScreenSettings.route
+                   // BottomItem.ScreenSettings.route
                 )
             ) {
                 BottomNavigation(navController = navController)

@@ -29,7 +29,7 @@ class CheckParser {
 
             Log.d("Parsing", "Start check parsing")
 
-            val categories: MutableMap<CheckCategory, Float> = mutableMapOf()
+            val categories: MutableMap<CheckCategory, Pair<Int, Float>> = mutableMapOf()
             for (match in checkRegex.findAll(parseString)){
                 val (nameRaw, priceStr) = match.destructured
                 val namesForCategory = nameRaw.split(' ', '.').toMutableList().filter { it.all { it.isLetter() } }.map { it.lowercase() }
@@ -39,15 +39,22 @@ class CheckParser {
                     Log.d("checkCategory", "Found ${checkCategory.name} for $nameRaw; price: $price")
 
                     if (categories.containsKey(checkCategory)){
-                        categories[checkCategory] = categories[checkCategory]!! + price
+                        val oldValue = categories[checkCategory]
+                        categories[checkCategory] = Pair(oldValue!!.first + 1, oldValue.second + price)
                     }
                     else{
-                        categories[checkCategory] = price
+                        categories[checkCategory] = Pair(1, price)
                     }
                 }
             }
 
-            UserClass.addCheckTransaction(checkDatetime, categories)
+            val result: MutableMap<CheckCategory, Float> = mutableMapOf()
+            for (categoryPair in categories){
+                val sum = categoryPair.value.second
+                val count = categoryPair.value.first
+                result[categoryPair.key] = sum / count
+            }
+            UserClass.addCheckTransaction(checkDatetime, result)
         }
     }
 }

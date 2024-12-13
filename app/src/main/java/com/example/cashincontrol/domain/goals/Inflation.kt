@@ -1,7 +1,9 @@
 package com.example.cashincontrol.domain.goals
 
 import android.util.Log
+import com.example.cashincontrol.domain.UserClass.Companion.checkTransactions
 import com.example.cashincontrol.domain.UserClass.Companion.transactions
+import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.IncomeCategory
@@ -13,8 +15,15 @@ class Inflation {
         var GlobalInflation = 0f
         lateinit var YearInflation: Map<Month, Float>
         lateinit var CategoryInflation: Map<ExpensesCategory, Float>
+        lateinit var CheckInflation: Map<CheckCategory, Float>
 
         fun updateInflation(){
+            updateYearlyInflation()
+            updateCategoryInflation()
+            updateCheckInflation()
+        }
+
+        private fun updateYearlyInflation(){
             val lastYear = getYearlyMean(LocalDate.now())
             val previousYear = getYearlyMean(LocalDate.now().minusYears(1))
 
@@ -91,6 +100,56 @@ class Inflation {
             }
             
             val result: MutableMap<ExpensesCategory, Float> = mutableMapOf()
+            for (keyValue in means){
+                val mean = keyValue.value.second / keyValue.value.first
+                result[keyValue.key] = mean
+            }
+
+            return result
+        }
+
+        private fun updateCheckInflation(){
+            val lastPeriod =  getCheckCategoriesMeanForMonth(LocalDate.now())
+            val previousPeriod = getCheckCategoriesMeanForMonth(LocalDate.now().minusMonths(1))
+
+            CheckInflation = getInflation(lastPeriod, previousPeriod)
+        }
+
+        private fun getCheckCategoriesMeanForMonth(startDate: LocalDate): Map<CheckCategory, Float>{
+            val monthAgo = startDate.minusMonths(1)
+
+            var startIndex = -1
+            for (i in 0..<checkTransactions.size){
+                if (checkTransactions[i].date.toLocalDate() <= startDate){
+                    startIndex = i
+                    break
+                }
+            }
+
+            if (startIndex == -1){
+                return mapOf()
+            }
+
+            val means: MutableMap<CheckCategory, Pair<Int, Float>> = mutableMapOf()
+            for (i in startIndex..<checkTransactions.size){
+                val transaction = checkTransactions[i]
+                if (transaction.date.toLocalDate() < monthAgo) break
+
+                for (categoryPair in transaction.category) {
+                    val category = categoryPair.key
+                    val sum = categoryPair.value
+
+                    if (means.containsKey(category)) {
+                        val oldValue = means[category]
+                        means[category] =
+                            Pair(oldValue!!.first + 1, oldValue.second + sum)
+                    } else {
+                        means[category] = Pair(1, sum)
+                    }
+                }
+            }
+
+            val result: MutableMap<CheckCategory, Float> = mutableMapOf()
             for (keyValue in means){
                 val mean = keyValue.value.second / keyValue.value.first
                 result[keyValue.key] = mean

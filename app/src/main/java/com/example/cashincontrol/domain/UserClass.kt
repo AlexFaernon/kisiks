@@ -24,7 +24,7 @@ class UserClass {
     companion object {
         var transactions: MutableList<Transaction> = mutableListOf()
         private var categories: MutableList<Category> = mutableListOf()
-        private var checkTransactions: MutableList<CheckTransaction> = mutableListOf()
+        var checkTransactions: MutableList<CheckTransaction> = mutableListOf()
         private var checkCategories: MutableList<CheckCategory> = baseCheckCategories.toMutableList()
         var goal: Goal? = null
         var currentMoney: Float = 1000F
@@ -142,7 +142,7 @@ class UserClass {
             val newTransaction = CheckTransaction(datetime, checkCategories)
             val insertIndex = checkTransactions.binarySearch(newTransaction, compareBy<CheckTransaction> { it.date }.reversed())
             if (insertIndex >= 0) {
-                Log.d("New transaction", "Transaction by price ${newTransaction.categories.values.sum()} discarded")
+                Log.d("New transaction", "Transaction by price ${newTransaction.category.values.sum()} discarded")
                 return
             }
 

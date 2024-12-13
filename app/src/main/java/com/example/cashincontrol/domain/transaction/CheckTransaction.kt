@@ -4,5 +4,5 @@ import java.time.LocalDateTime
 
 data class CheckTransaction(
     val date: LocalDateTime,
-    val categories: Map<CheckCategory, Float>
+    val category: Map<CheckCategory, Float>
 )

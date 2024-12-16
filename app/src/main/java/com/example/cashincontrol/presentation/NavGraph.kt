@@ -43,7 +43,8 @@ fun NavGraph(
                     navHostController.navigate("inflation") {
                         popUpTo("onboarding") { inclusive = true }
                     }
-                }
+                },
+                isBottomBarVisible = isBottomBarVisible
             )
         }
     }

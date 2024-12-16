@@ -1,6 +1,7 @@
 package com.example.cashincontrol.presentation
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,8 +32,21 @@ import com.example.cashincontrol.ui.theme.lexendMegaFamily
 
 
 @Composable
-fun OnboardingScreens(navController: NavController, onComplete: () -> Unit) {
+fun OnboardingScreens(navController: NavController, onComplete: () -> Unit, isBottomBarVisible: (Boolean) -> Unit) {
     val currentScreen = remember { mutableIntStateOf(0) }
+
+    BackHandler {
+        if (currentScreen.intValue > 0) {
+            currentScreen.intValue--
+        } else {
+            UserClass.isOnboardingCompleted = true
+            navController.navigate("main") {
+                popUpTo("onboarding") { inclusive = true }
+            }
+            isBottomBarVisible(true)
+
+        }
+    }
 
     if (!UserClass.isOnboardingCompleted) {
         if (currentScreen.intValue < OnboardingData.screens.size) {

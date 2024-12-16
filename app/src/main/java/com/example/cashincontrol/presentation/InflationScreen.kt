@@ -71,7 +71,8 @@ fun InflationScreen(
                 navController.navigate("inflation") {
                     popUpTo("inflation") { inclusive = true }
                 }
-            }
+            },
+            isBottomBarVisible
         )
     } else {
         isBottomBarVisible(true)

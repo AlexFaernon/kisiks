@@ -26,7 +26,7 @@ data class Goal(
 
         for (i in 1..<months){
             val prev = result.last()
-            result.add(prev * (Inflation.GlobalInflation + 1))
+            result.add(prev * (Inflation.GlobalInflation / 100 + 1))
         }
 
         return result

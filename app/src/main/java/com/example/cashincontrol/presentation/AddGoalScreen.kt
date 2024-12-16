@@ -66,7 +66,7 @@ fun AddGoalScreen(navController: NavController) {
     val goalSum = remember { mutableStateOf("") }
     val goalDate = remember { mutableStateOf(LocalDate.now()) }
     val monthlyPayment = remember { mutableStateOf("") }
-    val monthlyPaymentPurpose = remember { mutableStateOf("") }
+    val monthlyPaymentInflation = remember { mutableStateOf("") }
     val isNotifications = remember { mutableStateOf(true) }
 
     Column(
@@ -81,7 +81,7 @@ fun AddGoalScreen(navController: NavController) {
             goalSum,
             goalDate,
             monthlyPayment,
-            monthlyPaymentPurpose,
+            monthlyPaymentInflation,
             isNotifications,
         )
 
@@ -92,11 +92,13 @@ fun AddGoalScreen(navController: NavController) {
                     goalSum = goalSum.value.toFloatOrNull() ?: 0f,
                     goalDate = goalDate.value,
                     monthlyPayment = monthlyPayment.value.toFloatOrNull() ?: 0f,
-                    monthlyPaymentPurpose = monthlyPaymentPurpose.value.toFloatOrNull() ?: 0f,
+                    monthlyPaymentPurpose = monthlyPaymentInflation.value.toFloatOrNull() ?: 0f,
                     isNotifications = isNotifications.value,
                 )
                 UserClass.goal = Goal(dataForm.goalName, dataForm.goalSum, dataForm.goalDate)
                 monthlyPayment.value = UserClass.goal!!.monthlyPayment().toString()
+                val inflationPayment = UserClass.goal!!.getInflationPayments()
+                monthlyPaymentInflation.value = (inflationPayment.sum() / inflationPayment.size).toString()
                 Log.d("monthly payment", UserClass.goal!!.monthlyPayment().toString())
             },
             colors = ButtonDefaults.buttonColors(
@@ -129,7 +131,7 @@ private fun TopSection(navController: NavController){
             .height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = { navController.navigate("main") }) {
+        IconButton(onClick = { navController.navigate("goal") }) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_back),
                 contentDescription = "Назад",
@@ -153,7 +155,7 @@ private fun MainSection(
     goalSum: MutableState<String>,
     goalDate: MutableState<LocalDate>,
     monthlyPayment: MutableState<String>,
-    monthlyPaymentPurpose: MutableState<String>,
+    monthlyPaymentInflation: MutableState<String>,
     isNotifications: MutableState<Boolean>,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -161,7 +163,7 @@ private fun MainSection(
         TargetSumSection(goalSum)
         TargetDateSection(goalDate)
         MonthlyPaymentSection(monthlyPayment)
-        MonthlyPaymentPurposeSection(monthlyPaymentPurpose)
+        MonthlyPaymentInflationSection(monthlyPaymentInflation)
         TargetSwitchSection(isNotifications)
     }
 }
@@ -189,7 +191,7 @@ private fun MonthlyPaymentSection(monthlyPayment: MutableState<String>) {
 }
 
 @Composable
-private fun MonthlyPaymentPurposeSection(monthlyPaymentPurpose: MutableState<String>) {
+private fun MonthlyPaymentInflationSection(monthlyPaymentPurpose: MutableState<String>) {
     LabeledRowWithText(label = "Учитывая инфляцию", textState = monthlyPaymentPurpose)
 }
 

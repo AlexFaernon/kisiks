@@ -27,7 +27,7 @@ class UserClass {
         var checkTransactions: MutableList<CheckTransaction> = mutableListOf()
         private var checkCategories: MutableList<CheckCategory> = baseCheckCategories.toMutableList()
         var goal: Goal? = null
-        var currentMoney: Float = 1000F
+        var currentMoney: Float = 0F
         var isOnboardingCompleted: Boolean = false
         var startDate: LocalDate = LocalDate.now()
 

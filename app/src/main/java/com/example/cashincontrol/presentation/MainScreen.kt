@@ -125,7 +125,7 @@ private fun TopSection() {
             )
 
             Text(
-                text = "${UserClass.currentMoney} ₽",
+                text = "${formatToTwoDecimals(UserClass.currentMoney.toString())} ₽",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.align(Alignment.CenterVertically)

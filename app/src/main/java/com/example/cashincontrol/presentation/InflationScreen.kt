@@ -122,27 +122,37 @@ fun MainInflation(){
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column() {
-            Text(
-                text = String.format("%.1f %%", Inflation.GlobalInflation),
-                fontSize = 48.sp,
-                color = Color.Black,
+        if (Inflation.YearInflation.isNotEmpty()) {
+            Column() {
+                Text(
+                    text = String.format("%.1f %%", Inflation.GlobalInflation),
+                    fontSize = 48.sp,
+                    color = Color.Black,
+                )
+                Text(
+                    text = "текущий уровень",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+
+            val iconRes =
+                if (Inflation.GlobalInflation < 0) R.drawable.icon_down else R.drawable.icon_up
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = Color.Unspecified
             )
+        }
+        else {
             Text(
-                text = "текущий уровень",
+                text = "Недостаточно данных",
                 fontSize = 14.sp,
                 color = Color.Gray,
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
-        val iconRes = if (Inflation.GlobalInflation < 0) R.drawable.icon_down else R.drawable.icon_up
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(40.dp),
-            tint = Color.Unspecified
-        )
     }
 }
 
@@ -339,7 +349,8 @@ private fun InflationChart() {
     val data = Inflation.YearInflation
     val reversedData = data.entries.reversed()
 
-    val block = listOf(Point(x = 1f, 7.27f),
+    val block = listOf(
+        Point(x = 1f, 7.27f),
         Point(x = 2f, 7.5f),
         Point(x = 3f, 7.52f),
         Point(x = 4f, 7.82f),
@@ -351,81 +362,70 @@ private fun InflationChart() {
         Point(x = 10f, 8.41f),
         Point(x = 11f, 8.52f),
         Point(x = 12f, 8.62f)
-        )
+    )
 
     val firstMonth = reversedData.firstOrNull()?.key ?: Month.JANUARY
     val pointsData = getPoints(reversedData).sortedBy { it.x }
     val monthLabels = getOrderedMonths(firstMonth.value)
 
+    // Определяем источник данных для Y оси
+    val combinedYValues = if (pointsData.isEmpty()) {
+        block.map { it.y } // Если pointsData пустой, берем Y из block
+    } else {
+        block.map { it.y } + pointsData.map { it.y } // В противном случае комбинируем
+    }
+
+    val maxY = combinedYValues.maxOrNull()?.let { adaptiveRoundUp(it) } ?: 0f
+    val minY = combinedYValues.minOrNull()?.let { adaptiveRoundDown(it) } ?: 0f
+    val step = (maxY - minY) / 5
+
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
-        .steps(pointsData.size - 1)
+        .steps(block.size - 1)
         .labelData { index -> monthLabels[index % monthLabels.size] }
         .labelAndAxisLinePadding(15.dp)
         .shouldDrawAxisLineTillEnd(true)
         .build()
 
-    val maxY = maxOf(pointsData.maxOf { it.y }, 0f).let { adaptiveRoundUp(it) }
-    val minY = minOf(pointsData.minOf { it.y }, 0f).let { adaptiveRoundDown(it) }
-    val step = (maxY - minY) / 5
-
     val yAxisData = AxisData.Builder()
         .steps(5)
         .axisOffset(10.dp)
         .labelData { i ->
-             val value = minY + step * i
-             "${value.toInt()} %"}
+            val value = minY + step * i
+            String.format("%.2f", value) // Форматирование для 2 знаков после точки
+        }
         .build()
 
-//    val gridLines = GridLines(
-//        color = Color.Gray,
-//        lineWidth = 1.dp,
-//        enableHorizontalLines = true,
-//        enableVerticalLines = true,
-//        drawHorizontalLines = { startX, endX, y ->
-//            val screenY = mapYToScreen(0f, minY, maxY, size.height)
-//            drawLine(
-//                color = Color.Red,
-//                start = Offset(0f, screenY),
-//                end = Offset(size.width, screenY),
-//                strokeWidth = 5f
-//            )
-//        },
-//    )
+    val lines = mutableListOf<Line>()
+
+    // Добавляем линию pointsData, если она не пустая
+    if (pointsData.isNotEmpty()) {
+        lines.add(
+            Line(
+                dataPoints = pointsData,
+                LineStyle(color = Color(0xFFbb73ff)),
+                IntersectionPoint(color = Color(0xFFbb73ff)),
+                SelectionHighlightPoint(),
+                ShadowUnderLine(color = Color(0xFFbb73ff)),
+                SelectionHighlightPopUp()
+            )
+        )
+    }
+
+    // Линия block добавляется всегда
+    lines.add(
+        Line(
+            dataPoints = block,
+            LineStyle(color = Color(0xFFffbb73)),
+            IntersectionPoint(color = Color(0xFFffbb73)),
+            SelectionHighlightPoint(),
+            ShadowUnderLine(color = Color(0xFFffbb73)),
+            SelectionHighlightPopUp()
+        )
+    )
 
     val lineChartData = LineChartData(
-        linePlotData = LinePlotData(
-            lines = listOf(
-                Line(
-                    dataPoints = pointsData,
-                    LineStyle(
-                        color = Color(0xFFbb73ff)
-                    ),
-                    IntersectionPoint(
-                        color = Color(0xFFbb73ff)
-                    ),
-                    SelectionHighlightPoint(),
-                    ShadowUnderLine(
-                        color = Color(0xFFbb73ff)
-                    ),
-                    SelectionHighlightPopUp()
-                ),
-                Line(
-                    dataPoints = block,
-                    LineStyle(
-                        color = Color(0xFFffbb73)
-                    ),
-                    IntersectionPoint(
-                        color = Color(0xFFffbb73)
-                    ),
-                    SelectionHighlightPoint(),
-                    ShadowUnderLine(
-                        color = Color(0xFFffbb73)
-                    ),
-                    SelectionHighlightPopUp()
-                )
-            ),
-        ),
+        linePlotData = LinePlotData(lines = lines),
         xAxisData = xAxisData,
         yAxisData = yAxisData,
         gridLines = GridLines(),
@@ -442,6 +442,8 @@ private fun InflationChart() {
         InflationLegendItem()
     }
 }
+
+
 
 @Composable
 private fun InflationLegendItem() {

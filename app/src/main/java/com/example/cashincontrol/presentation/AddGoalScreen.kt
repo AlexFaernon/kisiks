@@ -215,7 +215,7 @@ private fun TargetSwitchSection(isRegular: MutableState<Boolean>) {
 fun LabeledRowWithText(label: String, textState: MutableState<String>) {
     LabeledRow(label = label) {
         OutlinedTextField(
-            value = textState.value,
+            value = formatToTwoDecimals(textState.value),
             onValueChange = { },
             textStyle = TextStyle(fontSize = 20.sp),
             colors = TextFieldDefaults.colors(
@@ -267,6 +267,17 @@ fun LabeledRowWithNumTextField(label: String, textState: MutableState<String>) {
         )
     }
 }
+
+fun formatToTwoDecimals(input: String): String {
+    return if (input.toFloatOrNull() != null) {
+        // Если строку можно преобразовать в число, форматируем до 2 знаков после точки
+        String.format("%.2f", input.toFloat())
+    } else {
+        // Если строка содержит символы и не является числом, возвращаем как есть
+        input
+    }
+}
+
 
 fun isButtonEnabled(goalDate: LocalDate, goalSum: String): Boolean {
     val today = LocalDate.now()

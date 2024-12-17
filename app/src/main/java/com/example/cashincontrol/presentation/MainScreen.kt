@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,12 +36,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cashincontrol.R
 import com.example.cashincontrol.domain.UserClass
+import com.example.cashincontrol.domain.notifications.showNotification
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
 import com.example.cashincontrol.domain.transaction.ExpensesTransaction
 import com.example.cashincontrol.domain.transaction.Transaction
 
 @Composable
 fun MainScreen(navController: NavController){
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +69,14 @@ fun MainScreen(navController: NavController){
         }
 
         IconButton(
-            onClick = { navController.navigate("add") },
+            onClick = {
+                navController.navigate("add")
+                showNotification(
+                    context = context,
+                    notificationId = 1,
+                    title = "Пример уведомления",
+                    message = "Это тестовое уведомление"
+                )},
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 88.dp)
@@ -125,7 +135,7 @@ private fun TopSection() {
             )
 
             Text(
-                text = "${UserClass.currentMoney} ₽",
+                text = "${formatToTwoDecimals(UserClass.currentMoney.toString())} ₽",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.align(Alignment.CenterVertically)

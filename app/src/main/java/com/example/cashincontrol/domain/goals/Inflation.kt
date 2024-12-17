@@ -28,7 +28,10 @@ class Inflation {
             val previousYear = getYearlyMean(LocalDate.now().minusYears(1))
 
             YearInflation = getInflation(lastYear, previousYear)
-            GlobalInflation = YearInflation.values.average().toFloat()
+
+            val globalInflation = YearInflation.values.average().toFloat()
+            GlobalInflation = if (globalInflation.isNaN()) 0f else globalInflation
+
             Log.d("inflation", "Yearly inflation")
             for (i in YearInflation){
                 Log.d("inflation", "${i.key} ${i.value}")

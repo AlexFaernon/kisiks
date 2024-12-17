@@ -7,6 +7,7 @@ import com.example.cashincontrol.data.saving.UserDataSaveClass
 import com.example.cashincontrol.data.saving.UserDataStoreManager
 import com.example.cashincontrol.data.saving.database.DbHandler
 import com.example.cashincontrol.domain.goals.Goal
+import com.example.cashincontrol.domain.goals.RankClass
 import com.example.cashincontrol.domain.parsing.baseCheckCategories
 import com.example.cashincontrol.domain.transaction.Category
 import com.example.cashincontrol.domain.transaction.CheckCategory
@@ -30,6 +31,7 @@ class UserClass {
         var currentMoney: Float = 0F
         var isOnboardingCompleted: Boolean = false
         var startDate: LocalDate = LocalDate.now()
+        var rank: RankClass = RankClass()
 
         @Composable
         fun SetupUserData(dataStoreManager: UserDataStoreManager){
@@ -58,6 +60,7 @@ class UserClass {
             goal = userData.goal
             isOnboardingCompleted = userData.onboardingCompleted
             startDate = userData.startDate
+            rank = userData.rank
         }
 
         fun getExpensesCategory(): List<ExpensesCategory> {
@@ -116,6 +119,7 @@ class UserClass {
             transactions.add(index, newTransaction)
             DbHandler.addTransaction(newTransaction)
             currentMoney += if (isExpenses) -sum else sum
+            rank.checkNewRank()
         }
 
         fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
@@ -175,6 +179,7 @@ class UserClass {
             val index = -insertIndex - 1
             checkTransactions.add(index, newTransaction)
             DbHandler.addCheckTransaction(newTransaction)
+            rank.checkNewRank()
         }
 
         fun findCheckCategoryByAlias(maybeAliases: List<String>): CheckCategory? {

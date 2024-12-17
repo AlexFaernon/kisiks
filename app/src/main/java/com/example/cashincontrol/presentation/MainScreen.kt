@@ -70,13 +70,7 @@ fun MainScreen(navController: NavController){
 
         IconButton(
             onClick = {
-                navController.navigate("add")
-                showNotification(
-                    context = context,
-                    notificationId = 1,
-                    title = "Пример уведомления",
-                    message = "Это тестовое уведомление"
-                )},
+                navController.navigate("add")},
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 88.dp)

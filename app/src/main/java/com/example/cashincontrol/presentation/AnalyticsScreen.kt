@@ -86,7 +86,7 @@ fun AnalyticsScreen() {
             )
             MainBarChart(UserClass.transactions)
             BottomCard("Достижение \"Финансовый гений\"", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
-            BottomCard("Подсказка", "Отличная идея - сохранять небольшую часть дохода (5%-10%) в пользу финансовой подушки безопасности.", R.drawable.icon_hint)
+            BottomCard("Звание",UserClass.rank.stringRank, R.drawable.icon_hint)
         }
     }
 }

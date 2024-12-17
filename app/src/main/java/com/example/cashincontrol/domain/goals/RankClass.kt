@@ -39,8 +39,8 @@ class RankClass{
             return
         }
 
-        val transactionDate = lastTransaction?.date!!.toLocalDate()
-        val checkTransaction = lastCheckTransaction?.date!!.toLocalDate()
+        val transactionDate = lastTransaction?.date?.toLocalDate()
+        val checkTransaction = lastCheckTransaction?.date?.toLocalDate()
 
         val checkDate = {current: LocalDate, prev: LocalDate? -> prev != null &&
                 (prev.month != current.month || prev.year != current.year)}

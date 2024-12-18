@@ -1,16 +1,19 @@
 package com.example.cashincontrol.domain.goals
 
-import com.example.cashincontrol.domain.UserClass
+import androidx.core.math.MathUtils.clamp
+import com.example.cashincontrol.data.saving.LocalDateSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
-import kotlin.math.min
 
 @Serializable
 class RankClass{
     var currentRank: Int = 0
         private set(value){
-            field = min(value, 10)
+            field = clamp(value, 0, 10)
         }
+
+    @Serializable(with = LocalDateSerializer::class)
+    private var lastUploadDate: LocalDate? = null
 
     private val stringRanks = listOf(
         "Нет ранга",
@@ -32,17 +35,9 @@ class RankClass{
 
     fun checkNewRank(){
         val currentDate = LocalDate.now()
-        val lastTransaction = UserClass.transactions.firstOrNull()
-        val lastCheckTransaction = UserClass.checkTransactions.firstOrNull()
-
-        val transactionDate = lastTransaction?.date?.toLocalDate()
-        val checkTransaction = lastCheckTransaction?.date?.toLocalDate()
-
-        val checkDate = {current: LocalDate, prev: LocalDate? ->
-            prev == null || prev.month != current.month || prev.year != current.year}
-
-        if (checkDate(currentDate, transactionDate) && checkDate(currentDate, checkTransaction)){
+        if (lastUploadDate == null || currentDate.month != lastUploadDate!!.month || currentDate.year != lastUploadDate!!.year){
             currentRank++
         }
+        lastUploadDate = currentDate
     }
 }

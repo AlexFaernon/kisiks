@@ -18,7 +18,10 @@ data class Goal(
 
 
     private val payments: MutableList<Pair<@Serializable(with = LocalDateSerializer::class) LocalDate, Float>> = mutableListOf()
-    val isAchieved = payments.sumOf { it.second.toDouble() } >= sum
+    val isAchieved: Boolean
+        get() {
+            return payments.sumOf { it.second.toDouble() } >= sum
+        }
 
     fun monthlyPayment(): Float{
         val months = Period.between(startDate, targetDate).toTotalMonths()

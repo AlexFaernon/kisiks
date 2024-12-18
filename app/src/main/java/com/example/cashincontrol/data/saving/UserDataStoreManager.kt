@@ -7,7 +7,7 @@ import com.example.cashincontrol.domain.UserClass
 private val Context.protoDataStore by dataStore("UserData.json", UserDataSerializer)
 class UserDataStoreManager(private val context: Context) {
     suspend fun saveData(){
-        val save = UserDataSaveClass(UserClass.goal, UserClass.startDate, UserClass.isOnboardingCompleted, UserClass.rank)
+        val save = UserDataSaveClass(UserClass.goal, UserClass.startDate, UserClass.isOnboardingCompleted, UserClass.rank, UserClass.achievementSystem)
         context.protoDataStore.updateData { save }
     }
 

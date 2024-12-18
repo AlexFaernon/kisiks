@@ -74,7 +74,7 @@ class AchievementSystem {
         }
     }
 
-    val getAchievements = listOf(
+    val getAchievements: List<Achievement> = listOf(
         noTransactions,
         noGoalPayment,
         lowInflation,

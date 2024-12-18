@@ -10,7 +10,7 @@ data class Achievement(
     val description: String,
     val icon: Int = 0
 ){
-    private var achieved = false
+    var achieved = false
 
     fun achieve(context: Context){
         if (achieved) return

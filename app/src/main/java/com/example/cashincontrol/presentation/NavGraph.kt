@@ -18,7 +18,7 @@ fun NavGraph(
             Main(navHostController)
         }
         composable("analytics") {
-            Analytic()
+            Analytic(paddingValues)
         }
         composable("inflation") {
             Inflation(navController = navHostController, isBottomBarVisible = isBottomBarVisible, paddingValues = paddingValues)

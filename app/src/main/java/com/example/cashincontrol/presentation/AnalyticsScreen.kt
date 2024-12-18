@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,10 +52,15 @@ import java.time.LocalDate
 import kotlin.random.Random
 
 @Composable
-fun AnalyticsScreen() {
+fun AnalyticsScreen(
+    paddingValues: PaddingValues
+) {
     if (UserClass.getExpensesTransactions().isEmpty() || UserClass.getIncomeTransactions().isEmpty()) {
         Text(
-            modifier = Modifier.fillMaxSize().wrapContentHeight(),
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight()
+                .padding(paddingValues),
             text = "Недостаточно данных",
             fontSize = 32.sp,
             color = Color.Gray,
@@ -60,10 +68,13 @@ fun AnalyticsScreen() {
         )
     }
     else {
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(start = 10.dp, top = 30.dp, end = 10.dp)
+                .verticalScroll(scrollState)
                 .background(Color.White),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -86,7 +97,7 @@ fun AnalyticsScreen() {
             )
             MainBarChart(UserClass.transactions)
             BottomCard("Достижение \"Финансовый гений\"", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
-            BottomCard("Звание",UserClass.rank.stringRank, R.drawable.icon_hint)
+            BottomCard("Звание",UserClass.rank.stringRank, R.drawable.rank_icon)
         }
     }
 }

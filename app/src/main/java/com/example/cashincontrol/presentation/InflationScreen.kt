@@ -368,11 +368,10 @@ private fun InflationChart() {
     val pointsData = getPoints(reversedData).sortedBy { it.x }
     val monthLabels = getOrderedMonths(firstMonth.value)
 
-    // Определяем источник данных для Y оси
     val combinedYValues = if (pointsData.isEmpty()) {
-        block.map { it.y } // Если pointsData пустой, берем Y из block
+        block.map { it.y }
     } else {
-        block.map { it.y } + pointsData.map { it.y } // В противном случае комбинируем
+        block.map { it.y } + pointsData.map { it.y }
     }
 
     val maxY = combinedYValues.maxOrNull()?.let { adaptiveRoundUp(it) } ?: 0f
@@ -392,13 +391,12 @@ private fun InflationChart() {
         .axisOffset(10.dp)
         .labelData { i ->
             val value = minY + step * i
-            String.format("%.2f", value) // Форматирование для 2 знаков после точки
+            String.format("%.2f", value)
         }
         .build()
 
     val lines = mutableListOf<Line>()
 
-    // Добавляем линию pointsData, если она не пустая
     if (pointsData.isNotEmpty()) {
         lines.add(
             Line(
@@ -412,7 +410,6 @@ private fun InflationChart() {
         )
     }
 
-    // Линия block добавляется всегда
     lines.add(
         Line(
             dataPoints = block,

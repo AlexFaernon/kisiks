@@ -15,8 +15,8 @@ fun Main(navController: NavController) {
 }
 
 @Composable
-fun Analytic() {
-    AnalyticsScreen()
+fun Analytic(paddingValues: PaddingValues) {
+    AnalyticsScreen(paddingValues)
 }
 
 @Composable

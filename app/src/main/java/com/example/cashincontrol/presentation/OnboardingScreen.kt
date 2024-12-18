@@ -81,28 +81,34 @@ private fun OnboardingScreen1(screen: OnboardingScreenData, onNext: () -> Unit) 
             modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp)
         )
 
-        Image(
-            painter = painterResource(screen.imageRes),
-            contentDescription = "Onboarding Image",
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(375.dp)
-                .width(350.dp)
-        )
-
-        IconButton(
-            onClick = onNext,
-            modifier = Modifier
-                .size(120.dp)
-                .align(Alignment.End)
-                .padding(bottom = 35.dp, end = 25.dp),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.next),
-                contentDescription = "Дальше",
+                .fillMaxSize()
+                .background(Color.White)) {
+            Image(
+                painter = painterResource(screen.imageRes),
+                contentDescription = "Onboarding Image",
                 modifier = Modifier
-                    .fillMaxSize(),
-                tint = Color.Unspecified,)
+                    .fillMaxWidth()
+                    .height(375.dp)
+                    .width(350.dp)
+            )
+
+            IconButton(
+                onClick = onNext,
+                modifier = Modifier
+                    .size(120.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 35.dp, end = 25.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.next),
+                    contentDescription = "Дальше",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    tint = Color.Unspecified,
+                )
+            }
         }
     }
 }

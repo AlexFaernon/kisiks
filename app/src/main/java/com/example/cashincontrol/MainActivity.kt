@@ -1,5 +1,6 @@
 package com.example.cashincontrol
 
+import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,7 +14,6 @@ import com.example.cashincontrol.presentation.Start
 import com.example.cashincontrol.ui.theme.CashInControlTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import android.Manifest
 
 class MainActivity : ComponentActivity() {
     private val dataStoreManager: UserDataStoreManager = UserDataStoreManager(this)

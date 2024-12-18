@@ -1,21 +1,19 @@
 package com.example.cashincontrol.domain.notifications
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-
-import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Log
-import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.cashincontrol.R
 
-fun showNotification(context: Context, notificationId: Int, title: String, message: String) {
+fun showNotification(context: Context, title: String, message: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         if (ContextCompat.checkSelfPermission(
                 context,
@@ -48,7 +46,7 @@ fun showNotification(context: Context, notificationId: Int, title: String, messa
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
     with(NotificationManagerCompat.from(context)) {
-        notify(notificationId, builder.build())
+        notify(1, builder.build())
     }
 }
 

@@ -1,6 +1,8 @@
 package com.example.cashincontrol.domain.goals
 
 import android.util.Log
+import androidx.compose.runtime.Composable
+import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.UserClass.Companion.checkTransactions
 import com.example.cashincontrol.domain.UserClass.Companion.transactions
 import com.example.cashincontrol.domain.transaction.CheckCategory
@@ -17,13 +19,23 @@ class Inflation {
         lateinit var CategoryInflation: Map<ExpensesCategory, Float>
         lateinit var CheckInflation: Map<CheckCategory, Float>
 
-        fun updateInflation(){
-            updateYearlyInflation()
+        val officialInflation = listOf(
+            7.27f, 7.5f, 7.52f, 7.82f, 7.70f, 7.86f, 8.49f, 9.09f, 8.71f, 8.41f, 8.52f, 8.62f
+        )
+
+        fun getOfficialForMonth(month: Month = LocalDate.now().month): Float{
+            return officialInflation[month.value - 1]
+        }
+
+        @Composable
+        fun UpdateInflation(){
+            UpdateYearlyInflation()
             updateCategoryInflation()
             updateCheckInflation()
         }
 
-        private fun updateYearlyInflation(){
+        @Composable
+        private fun UpdateYearlyInflation(){
             val lastYear = getYearlyMean(LocalDate.now())
             val previousYear = getYearlyMean(LocalDate.now().minusYears(1))
 
@@ -31,6 +43,7 @@ class Inflation {
 
             val globalInflation = YearInflation.values.average().toFloat()
             GlobalInflation = if (globalInflation.isNaN()) 0f else globalInflation
+            UserClass.achievementSystem.CheckInflation()
 
             Log.d("inflation", "Yearly inflation")
             for (i in YearInflation){
@@ -101,7 +114,7 @@ class Inflation {
                     means[category] = Pair(1, transaction.sum)
                 }
             }
-            
+
             val result: MutableMap<ExpensesCategory, Float> = mutableMapOf()
             for (keyValue in means){
                 val mean = keyValue.value.second / keyValue.value.first

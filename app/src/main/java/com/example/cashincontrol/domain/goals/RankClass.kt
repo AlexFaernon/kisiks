@@ -7,12 +7,13 @@ import kotlin.math.min
 
 @Serializable
 class RankClass{
-    var currentRank: Int = -1
+    var currentRank: Int = 0
         private set(value){
             field = min(value, 10)
         }
 
     private val stringRanks = listOf(
+        "Нет ранга",
         "Новичок",
         "Эксперт Бронзовый",
         "Эксперт Серебряный",
@@ -27,17 +28,12 @@ class RankClass{
     )
 
     val stringRank
-        get() = if (currentRank == -1) "-" else stringRanks[currentRank]
+        get() = stringRanks[currentRank]
 
     fun checkNewRank(){
         val currentDate = LocalDate.now()
-        val lastTransaction = UserClass.transactions.lastOrNull()
-        val lastCheckTransaction = UserClass.checkTransactions.lastOrNull()
-
-        if (lastCheckTransaction == null && lastTransaction == null){
-            currentRank++
-            return
-        }
+        val lastTransaction = UserClass.transactions.firstOrNull()
+        val lastCheckTransaction = UserClass.checkTransactions.firstOrNull()
 
         val transactionDate = lastTransaction?.date?.toLocalDate()
         val checkTransaction = lastCheckTransaction?.date?.toLocalDate()

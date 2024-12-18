@@ -88,7 +88,7 @@ fun InflationScreen(
                 textAlign = TextAlign.Center
             )
         } else {
-            Inflation.updateInflation()
+            Inflation.UpdateInflation()
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier

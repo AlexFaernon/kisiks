@@ -1,6 +1,5 @@
 package com.example.cashincontrol.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -287,6 +285,10 @@ fun RefillGoalDialog(
     onDismiss: () -> Unit,
 ) {
     val money = remember { mutableFloatStateOf(0f) }
+    val addPayment = remember { mutableStateOf(false) }
+    if (addPayment.value){
+        UserClass.goal?.AddPayment(LocalDate.now(), money.floatValue)
+    }
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -322,7 +324,7 @@ fun RefillGoalDialog(
                     }
                     TextButton(
                         onClick = {
-                            UserClass.goal!!.addPayment(LocalDate.now(), money.floatValue)
+                            addPayment.value = true
                             onDismiss()
                         }
 

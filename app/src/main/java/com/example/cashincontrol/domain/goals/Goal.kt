@@ -1,6 +1,8 @@
 package com.example.cashincontrol.domain.goals
 
+import androidx.compose.runtime.Composable
 import com.example.cashincontrol.data.saving.LocalDateSerializer
+import com.example.cashincontrol.domain.UserClass
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.Period
@@ -14,7 +16,10 @@ data class Goal(
     @Serializable(with = LocalDateSerializer::class)
     val startDate: LocalDate = LocalDate.now()){
 
+
     private val payments: MutableList<Pair<@Serializable(with = LocalDateSerializer::class) LocalDate, Float>> = mutableListOf()
+    val isAchieved = payments.sumOf { it.second.toDouble() } >= sum
+
     fun monthlyPayment(): Float{
         val months = Period.between(startDate, targetDate).toTotalMonths()
         return sum / months
@@ -32,8 +37,14 @@ data class Goal(
         return result
     }
 
-    fun addPayment(date: LocalDate, sum: Float) = payments.add(Pair(date, sum))
+    @Composable
+    fun AddPayment(date: LocalDate, sum: Float) {
+        payments.add(Pair(date, sum))
+        UserClass.achievementSystem.onGoalPayment()
+        if (isAchieved){
+            UserClass.achievementSystem.CheckGoal()
+        }
+    }
 
     fun getPayments(): List<Pair<LocalDate, Float>> = payments
 }
-

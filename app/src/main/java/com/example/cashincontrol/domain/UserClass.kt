@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import com.example.cashincontrol.data.saving.UserDataSaveClass
 import com.example.cashincontrol.data.saving.UserDataStoreManager
 import com.example.cashincontrol.data.saving.database.DbHandler
+import com.example.cashincontrol.domain.goals.AchievementSystem
 import com.example.cashincontrol.domain.goals.Goal
 import com.example.cashincontrol.domain.goals.RankClass
 import com.example.cashincontrol.domain.parsing.baseCheckCategories
@@ -32,6 +33,7 @@ class UserClass {
         var isOnboardingCompleted: Boolean = false
         var startDate: LocalDate = LocalDate.now()
         var rank: RankClass = RankClass()
+        var achievementSystem = AchievementSystem()
 
         @Composable
         fun SetupUserData(dataStoreManager: UserDataStoreManager){
@@ -61,6 +63,8 @@ class UserClass {
             isOnboardingCompleted = userData.onboardingCompleted
             startDate = userData.startDate
             rank = userData.rank
+            achievementSystem = userData.achievements
+            achievementSystem.CheckMonthly()
         }
 
         fun getExpensesCategory(): List<ExpensesCategory> {
@@ -120,6 +124,7 @@ class UserClass {
             DbHandler.addTransaction(newTransaction)
             currentMoney += if (isExpenses) -sum else sum
             rank.checkNewRank()
+            achievementSystem.onNewTransaction()
         }
 
         fun getOrCreateCategory(categoryName: String, isExpenses: Boolean): Category{
@@ -180,6 +185,7 @@ class UserClass {
             checkTransactions.add(index, newTransaction)
             DbHandler.addCheckTransaction(newTransaction)
             rank.checkNewRank()
+            achievementSystem.onNewTransaction()
         }
 
         fun findCheckCategoryByAlias(maybeAliases: List<String>): CheckCategory? {

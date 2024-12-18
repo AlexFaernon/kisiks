@@ -14,7 +14,7 @@ import java.time.Month
 
 class Inflation {
     companion object{
-        var GlobalInflation = 5f
+        var GlobalInflation = 0f
         lateinit var YearInflation: Map<Month, Float>
         lateinit var CategoryInflation: Map<ExpensesCategory, Float>
         lateinit var CheckInflation: Map<CheckCategory, Float>

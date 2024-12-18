@@ -78,6 +78,7 @@ fun GoalScreen(navController: NavController){
             GoalInfo()
             GoalChart()
             RefillGoal(navController)
+            DeleteGoal(navController)
         }
         else {
             IconButton(
@@ -281,14 +282,38 @@ fun RefillGoal(navController: NavController){
 }
 
 @Composable
+fun DeleteGoal(navController: NavController) {
+    Button(
+        onClick = {
+            UserClass.goal = null
+            navController.navigate("goal")
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFBEC399)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .border(1.dp, Color(0xFFBDBDBD), shape = RoundedCornerShape(3.dp)),
+        shape = RoundedCornerShape(3.dp),
+        contentPadding = PaddingValues(12.dp),
+    ) {
+        Text(
+            text = "Удалить цель",
+            color = Color.Black,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
 fun RefillGoalDialog(
     onDismiss: () -> Unit,
 ) {
     val money = remember { mutableFloatStateOf(0f) }
     val addPayment = remember { mutableStateOf(false) }
-    if (addPayment.value){
-        UserClass.goal?.AddPayment(LocalDate.now(), money.floatValue)
-    }
+
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -325,7 +350,6 @@ fun RefillGoalDialog(
                     TextButton(
                         onClick = {
                             addPayment.value = true
-                            onDismiss()
                         }
 
                     ) {
@@ -334,6 +358,10 @@ fun RefillGoalDialog(
                 }
             }
         }
+    }
+    if (addPayment.value){
+        UserClass.goal?.AddPayment(LocalDate.now(), money.floatValue)
+        onDismiss()
     }
 }
 
@@ -345,7 +373,7 @@ fun toChartPoints(goal: Goal?): List<Point> {
     return monthlyPayments.mapIndexed { index, payment ->
         Point(
             x = index.toFloat(),
-            y = payment
+            y = payment * index
         )
     }
 }

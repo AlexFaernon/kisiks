@@ -40,8 +40,13 @@ class UserClass {
 
             val categoriesFromDb = DbHandler.getCategories()
             if (categoriesFromDb.isEmpty()) {
-                createCategory("Продукты", true)
+                createCategory("Супермаркеты", true)
+                createCategory("Транспорт", true)
+                createCategory("Все для дома", true)
+
                 createCategory("Зарплата", false)
+                createCategory("Стипендия", false)
+
             } else {
                 categories = categoriesFromDb
             }

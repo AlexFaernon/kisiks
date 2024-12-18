@@ -24,11 +24,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +56,7 @@ import com.example.cashincontrol.domain.UserClass
 import com.example.cashincontrol.domain.goals.Inflation
 import com.example.cashincontrol.domain.transaction.CheckCategory
 import com.example.cashincontrol.domain.transaction.ExpensesCategory
+import parseInflation
 import java.time.Month
 
 @Composable
@@ -169,7 +174,9 @@ fun DynamicInflation(){
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val iconRes = if (Inflation.GlobalInflation < 0) R.drawable.icon_down_exclaim else R.drawable.screamer
+        if (Inflation.GlobalInflation != 0f) {
+
+            val iconRes = if (Inflation.GlobalInflation < 0) R.drawable.icon_down_exclaim else R.drawable.screamer
         Icon(
             painter = painterResource(iconRes),
             contentDescription = null,
@@ -179,13 +186,14 @@ fun DynamicInflation(){
 
         Spacer(modifier = Modifier.width(5.dp))
 
-        val textRes = if (Inflation.GlobalInflation < 0) "ниже" else "выше"
+            val textRes = if (Inflation.GlobalInflation < 0) "ниже" else "выше"
 
-        Text(
-            text = "Ваш уровень личной инфляции $textRes среднего",
-            fontSize = 13.sp,
-            color = Color.Gray,
-        )
+            Text(
+                text = "Ваш уровень личной инфляции $textRes среднего",
+                fontSize = 13.sp,
+                color = Color.Gray,
+            )
+        }
     }
     InflationChart()
 }
@@ -349,20 +357,22 @@ private fun InflationChart() {
     val data = Inflation.YearInflation
     val reversedData = data.entries.reversed()
 
-    val block = listOf(
-        Point(x = 1f, 7.27f),
-        Point(x = 2f, 7.5f),
-        Point(x = 3f, 7.52f),
-        Point(x = 4f, 7.82f),
-        Point(x = 5f, 7.70f),
-        Point(x = 6f, 7.86f),
-        Point(x = 7f, 8.49f),
-        Point(x = 8f, 9.09f),
-        Point(x = 9f, 8.71f),
-        Point(x = 10f, 8.41f),
-        Point(x = 11f, 8.52f),
-        Point(x = 12f, 8.62f)
-    )
+    var block by remember { mutableStateOf<List<Point>>(emptyList()) }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        val parsedData = parseInflation(context)
+        block = parsedData.entries
+            .sortedBy { it.key }
+            .mapIndexed { index, entry ->
+                Point(x = (index + 1).toFloat(), y = entry.value.y)
+            }
+    }
+
+    if (block.isEmpty()) {
+        Text("Загрузка данных...", modifier = Modifier.fillMaxWidth())
+        return
+    }
+
 
     val firstMonth = reversedData.firstOrNull()?.key ?: Month.JANUARY
     val pointsData = getPoints(reversedData).sortedBy { it.x }
@@ -373,6 +383,7 @@ private fun InflationChart() {
     } else {
         block.map { it.y } + pointsData.map { it.y }
     }
+
 
     val maxY = combinedYValues.maxOrNull()?.let { adaptiveRoundUp(it) } ?: 0f
     val minY = combinedYValues.minOrNull()?.let { adaptiveRoundDown(it) } ?: 0f
@@ -391,7 +402,7 @@ private fun InflationChart() {
         .axisOffset(10.dp)
         .labelData { i ->
             val value = minY + step * i
-            String.format("%.2f", value)
+            String.format("%.1f", value)
         }
         .build()
 

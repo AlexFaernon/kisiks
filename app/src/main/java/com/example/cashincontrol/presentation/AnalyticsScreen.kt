@@ -96,8 +96,18 @@ fun AnalyticsScreen(
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             MainBarChart(UserClass.transactions)
-            BottomCard("Достижение \"Финансовый гений\"", "На протяжении 10 месяцев у Вас получается сохранять более 10% зарплаты!", R.drawable.icon_achiv)
-            BottomCard("Звание",UserClass.rank.stringRank, R.drawable.rank_icon)
+            BottomCard("Звание", UserClass.rank.stringRank, R.drawable.rank_icon)
+
+            val achievedList = UserClass.achievementSystem.getAchievements
+                .filter { it.achieved}
+
+            achievedList.forEach { achievement ->
+                BottomCard(
+                    title = achievement.name,
+                    description = achievement.description,
+                    icon = R.drawable.icon_achiv
+                )
+            }
         }
     }
 }

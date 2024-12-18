@@ -75,4 +75,6 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.datastore)
+    implementation(libs.poi.ooxml)
+
 }

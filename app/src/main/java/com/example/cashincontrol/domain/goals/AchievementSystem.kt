@@ -73,4 +73,12 @@ class AchievementSystem {
             noGoalPayment.achieve(LocalContext.current)
         }
     }
+
+    val getAchievements = listOf(
+        noTransactions,
+        noGoalPayment,
+        lowInflation,
+        highInflation,
+        goalComplete
+    )
 }

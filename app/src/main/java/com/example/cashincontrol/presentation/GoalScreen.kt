@@ -118,13 +118,13 @@ private fun GoalInfo(){
 
 @Composable
 private fun GoalChart() {
-    val isPayment = remember { mutableStateOf(UserClass.goal!!.getPayments().isNotEmpty()) }
+    val isPayment = remember { mutableStateOf(UserClass.goal!!.payments.isNotEmpty()) }
 
     val goal = UserClass.goal
     val pointsData = toChartPoints(goal)
 
     val inflationSum = goal!!.getInflationPayments().sum()
-    val maxSecondLineY = goal.getPayments().maxOfOrNull { it.second } ?: 0f
+    val maxSecondLineY = goal.payments.maxOfOrNull { it.second } ?: 0f
     val maxY = maxOf(inflationSum, maxSecondLineY)
 
     val secondLineData = toSecondChartPoints(goal, maxY)
@@ -387,7 +387,7 @@ fun toChartPoints(goal: Goal?): List<Point> {
 }
 
 fun toSecondChartPoints(goal: Goal?, maxY: Float): List<Point> {
-    val payments = goal?.getPayments() ?: return emptyList()
+    val payments = goal?.payments ?: return emptyList()
 
     return payments.map { (date, payment) ->
         val monthIndex = Period.between(goal.startDate, date).toTotalMonths()

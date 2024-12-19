@@ -33,7 +33,10 @@ class CheckParser {
             val categories: MutableMap<CheckCategory, Pair<Int, Float>> = mutableMapOf()
             for (match in checkRegex.findAll(parseString)){
                 val (nameRaw, priceStr) = match.destructured
-                val namesForCategory = nameRaw.split(' ', '.').toMutableList().filter { it.all { it.isLetter() } }.map { it.lowercase() }
+                val namesForCategory = nameRaw
+                    .split(' ', '.').toMutableList()
+                    .filter { it.length > 2 && it.all { it.isLetter() } }
+                    .map { it.lowercase() }
                 val price = priceStr.replace(',', '.').toFloat()
                 val checkCategory = UserClass.findCheckCategoryByAlias(namesForCategory)
                 if (checkCategory != null){

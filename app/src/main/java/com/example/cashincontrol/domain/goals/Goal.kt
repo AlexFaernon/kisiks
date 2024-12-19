@@ -17,7 +17,7 @@ data class Goal(
     val startDate: LocalDate = LocalDate.now()){
 
 
-    private var payments: MutableList<Pair<@Serializable(with = LocalDateSerializer::class) LocalDate, Float>> = mutableListOf()
+    var payments: MutableList<Pair<@Serializable(with = LocalDateSerializer::class) LocalDate, Float>> = mutableListOf()
     val isAchieved: Boolean
         get() {
             return payments.sumOf { it.second.toDouble() } >= sum
@@ -48,6 +48,4 @@ data class Goal(
             UserClass.achievementSystem.CheckGoal()
         }
     }
-
-    fun getPayments(): List<Pair<LocalDate, Float>> = payments
 }

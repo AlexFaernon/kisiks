@@ -196,7 +196,10 @@ class UserClass {
         fun findCheckCategoryByAlias(maybeAliases: List<String>): CheckCategory? {
             for (checkCategory in checkCategories){
                 for (maybeAlias in maybeAliases){
-                    if (checkCategory.alias.find { it.contains(maybeAlias, true) } != null){
+                    val find = checkCategory.alias.find {
+                        it.startsWith(maybeAlias, true) || maybeAlias.startsWith(it, true)}
+                    if (find != null){
+                        Log.d("findCheck", "found $maybeAlias in $find")
                         return checkCategory
                     }
                 }

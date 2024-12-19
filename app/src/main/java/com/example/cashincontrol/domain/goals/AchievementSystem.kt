@@ -9,12 +9,12 @@ import java.time.Period
 
 @Serializable
 class AchievementSystem {
-    val lowInflation = Achievement(
+    var lowInflation = Achievement(
         "Как тебе такое, Илон Маск?",
         "Уровень инфляции стал ниже уровня инфляции по данным росстата",
     )
 
-    val highInflation = Achievement(
+    var highInflation = Achievement(
         "100! (24)",
         "Уровень инфляции поднялся до 24%"
     )
@@ -31,7 +31,7 @@ class AchievementSystem {
         }
     }
 
-    val goalComplete = Achievement(
+    var goalComplete = Achievement(
         "Успешный успех",
         "Добился поставленной финансовой цели"
     )
@@ -41,7 +41,7 @@ class AchievementSystem {
         goalComplete.achieve(LocalContext.current)
     }
 
-    val noTransactions = Achievement(
+    var noTransactions = Achievement(
         "Ну что там с деньгами?",
         "Не вносил расходы более месяца"
     )
@@ -50,7 +50,7 @@ class AchievementSystem {
         noTransactions.reset()
     }
 
-    val noGoalPayment = Achievement(
+    var noGoalPayment = Achievement(
         "Ваша казна пустеет, Милорд",
         "Не пополнил финансовую цель в текущем месяце."
     )
@@ -68,17 +68,20 @@ class AchievementSystem {
             noTransactions.achieve(LocalContext.current)
         }
 
-        val lastPaymentDate = UserClass.goal?.getPayments()?.lastOrNull()?.first
+        val lastPaymentDate = UserClass.goal?.payments?.lastOrNull()?.first
         if (compare(lastPaymentDate)){
             noGoalPayment.achieve(LocalContext.current)
         }
     }
 
-    val getAchievements: List<Achievement> = listOf(
-        noTransactions,
-        noGoalPayment,
-        lowInflation,
-        highInflation,
-        goalComplete
-    )
+    val getAchievements: List<Achievement>
+    get() {
+        return listOf(
+            noTransactions,
+            noGoalPayment,
+            lowInflation,
+            highInflation,
+            goalComplete
+        )
+    }
 }

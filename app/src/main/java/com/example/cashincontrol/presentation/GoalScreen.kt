@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -60,11 +62,17 @@ import java.time.LocalDate
 import java.time.Period
 
 @Composable
-fun GoalScreen(navController: NavController){
+fun GoalScreen(navController: NavController,
+               paddingValues: PaddingValues
+){
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .padding(start = 10.dp, top = 30.dp, end = 10.dp)
+            .verticalScroll(scrollState)
             .background(Color.White),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {

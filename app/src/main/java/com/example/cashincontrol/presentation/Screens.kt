@@ -25,8 +25,8 @@ fun Inflation(navController: NavController, isBottomBarVisible: (Boolean) -> Uni
 }
 
 @Composable
-fun Goal(navController: NavController) {
-    GoalScreen(navController)
+fun Goal(navController: NavController, paddingValues: PaddingValues) {
+    GoalScreen(navController, paddingValues)
 }
 
 @Composable

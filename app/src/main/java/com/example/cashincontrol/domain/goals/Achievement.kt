@@ -8,9 +8,10 @@ import kotlinx.serialization.Serializable
 data class Achievement(
     val name: String,
     val description: String,
-    val icon: Int = 0
+    val icon: Int = 0,
+    var achieved: Boolean = false
 ){
-    var achieved = false
+
 
     fun achieve(context: Context){
         if (achieved) return

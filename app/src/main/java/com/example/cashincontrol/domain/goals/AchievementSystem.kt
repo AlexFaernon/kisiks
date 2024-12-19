@@ -26,7 +26,7 @@ class AchievementSystem {
             highInflation.achieve(LocalContext.current)
         }
 
-        if (inflation < Inflation.getOfficialForMonth()){
+        if (Inflation.YearInflation.isNotEmpty() && inflation < Inflation.getOfficialForMonth()){
             lowInflation.achieve(LocalContext.current)
         }
     }

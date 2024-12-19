@@ -196,7 +196,7 @@ class UserClass {
         fun findCheckCategoryByAlias(maybeAliases: List<String>): CheckCategory? {
             for (checkCategory in checkCategories){
                 for (maybeAlias in maybeAliases){
-                    if (checkCategory.alias.contains(maybeAlias)){
+                    if (checkCategory.alias.find { it.contains(maybeAlias, true) } != null){
                         return checkCategory
                     }
                 }
